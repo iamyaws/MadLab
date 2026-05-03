@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mad Inventor Lab. Cel-shaded design tokens. */
+/* Apple HIG: respect motion preferences globally. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:root {
+  --bg: #ffe9c4;
+  --bg-2: #ffd089;
+  --paper: #fffbef;
+  --ink: #1f1a2a;
+  --ink-soft: #6a6275;
+  --primary: #3cc4da;
+  --primary-deep: #1f88a0;
+  --gold: #ffc93c;
+  --plum: #b970d2;
+  --rose: #ff6f61;
+  --sage: #7dd66f;
+  --line: #1f1a2a;
+}
+
+@layer base {
+  body {
+    @apply bg-bg text-ink font-body;
+    -webkit-font-smoothing: antialiased;
+  }
+}

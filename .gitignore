@@ -52,3 +52,6 @@ desktop.ini
 coverage/
 *.tgz
 *.tar.gz
+
+# typescript build info
+*.tsbuildinfo
