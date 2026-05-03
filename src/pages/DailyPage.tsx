@@ -8,6 +8,7 @@ import { DAILY_VISITORS } from '../data/dailyRoster';
 import { getRewardForDay } from '../data/dailyRewards';
 import { getDailyVisitor } from '../lib/dailyRotation';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { useSound } from '../hooks/useSound';
 
 /**
  * DailyPage (C7, route '/daily'). The Daily Special screen for Moonling
@@ -86,6 +87,7 @@ function rewardEyebrowDe(kind: string | undefined): string {
 export function DailyPage({ game, round }: DailyPageProps) {
   const navigate = useNavigate();
   const reducedMotion = useReducedMotion();
+  const { play } = useSound();
   const {
     state: gameState,
     recordDailyVisit,
@@ -140,6 +142,14 @@ export function DailyPage({ game, round }: DailyPageProps) {
    */
   const handleClaim = () => {
     if (isClaimed || !todayReward) return;
+    play('dailyClaim');
+    // The Day-7 reward (Mondstrahl unlock) carries the legendary fanfare.
+    // Day-7 typically lands via the round-flow claim path (ReactionPage),
+    // but if the player taps Einsammeln on a Day-7 partUnlock card we
+    // still want the fanfare to layer on top after the claim chime.
+    if (todayReward.kind === 'partUnlock') {
+      window.setTimeout(() => play('dayFanfare'), 200);
+    }
     claimDailyReward(dayInWeek);
     if (todayReward.kind === 'bonusStars') {
       const starCount = todayReward.payload.starCount ?? 0;

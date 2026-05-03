@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { RoundFlowApi } from '../hooks/useRoundFlow';
 import { getCustomerById } from '../data/customers';
@@ -6,6 +6,7 @@ import type { Trait, TraitScores } from '../lib/types';
 import { SensorGrid } from '../components/ui/SensorGrid';
 import { Customer as CustomerSvg } from '../components/customer/Customer';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { useSound } from '../hooks/useSound';
 import { PixiRoot } from '../pixi/PixiRoot';
 import { TestStage } from '../pixi/TestStage';
 
@@ -57,11 +58,18 @@ const STAGE_HEIGHT = 200;
 export function TestPage({ round }: TestPageProps) {
   const navigate = useNavigate();
   const reducedMotion = useReducedMotion();
+  const { play } = useSound();
   const { state, startReaction } = round;
   const invention = state.invention;
   const customer = state.customerId
     ? getCustomerById(state.customerId)
     : undefined;
+
+  // Track the previous total integer dot count so we can fire one
+  // `sensorTick` per dot landing instead of one per tick. A `useRef`
+  // keeps the comparison out of state (no re-render loop) and persists
+  // across the setInterval ticks below.
+  const prevTotalDotsRef = useRef(0);
 
   const [animatedScores, setAnimatedScores] = useState<TraitScores>(() =>
     reducedMotion && invention
@@ -82,6 +90,12 @@ export function TestPage({ round }: TestPageProps) {
   // Drive the dot fill animation.
   useEffect(() => {
     if (!invention) return;
+
+    // Ka-thunk on test-reveal start. Fires once per mount with an
+    // invention; the cleanup below resets the prev-dots ref so a
+    // re-mount re-arms the sensor-tick comparison.
+    play('kaThunk');
+    prevTotalDotsRef.current = 0;
 
     if (reducedMotion) {
       // Skip the animation; bounce to reaction on the next tick so the
@@ -105,6 +119,21 @@ export function TestPage({ round }: TestPageProps) {
         fresh[trait] = target[trait] * eased;
       }
       setAnimatedScores(fresh);
+      // Fire one `sensorTick` per integer dot landing. We compare the
+      // total rounded dot count this tick against the previous total
+      // and emit a tick for each new dot. Multiple dots in one tick
+      // (e.g. when two traits cross 0.5 in the same frame) play in
+      // quick succession; html5:false on the Howl lets them overlap.
+      const totalNow =
+        Math.round(fresh.fun) +
+        Math.round(fresh.zappy) +
+        Math.round(fresh.cozy) +
+        Math.round(fresh.boom);
+      if (totalNow > prevTotalDotsRef.current) {
+        const newDots = totalNow - prevTotalDotsRef.current;
+        for (let i = 0; i < newDots; i++) play('sensorTick');
+        prevTotalDotsRef.current = totalNow;
+      }
       if (tickCount >= TOTAL_TICKS) {
         window.clearInterval(handle);
         // Snap to exact target before advancing so the final dots match.
@@ -119,7 +148,7 @@ export function TestPage({ round }: TestPageProps) {
       window.clearInterval(handle);
       if (advanceHandle !== undefined) window.clearTimeout(advanceHandle);
     };
-  }, [invention, reducedMotion, startReaction, navigate]);
+  }, [invention, reducedMotion, startReaction, navigate, play]);
 
   // Round each animated trait to an integer 0..3 for SensorGrid display.
   const displayedScores: TraitScores = useMemo(

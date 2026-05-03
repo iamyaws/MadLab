@@ -6,6 +6,7 @@ import { getCustomerById } from '../data/customers';
 import { Customer as CustomerSvg } from '../components/customer/Customer';
 import type { Trait } from '../lib/types';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { useSound } from '../hooks/useSound';
 
 const TRAIT_GLYPH: Record<Trait, string> = {
   fun: '😊',
@@ -42,6 +43,7 @@ export interface ArrivalPageProps {
 export function ArrivalPage({ round }: ArrivalPageProps) {
   const navigate = useNavigate();
   const reducedMotion = useReducedMotion();
+  const { play } = useSound();
   const { state, startBuild } = round;
 
   // Defensive redirect: if the round isn't arrival (user landed here cold,
@@ -51,6 +53,15 @@ export function ArrivalPage({ round }: ArrivalPageProps) {
       navigate('/', { replace: true });
     }
   }, [state.phase, navigate]);
+
+  // Tube-swoosh on customer arrival. Fires once per mount; if the player
+  // navigates back to /arrival mid-round, the sound plays again, which
+  // matches the visual tube-drop animation re-firing.
+  useEffect(() => {
+    if (state.phase === 'arrival') {
+      play('tubeSwoosh');
+    }
+  }, [state.phase, play]);
 
   const customer = state.customerId ? getCustomerById(state.customerId) : undefined;
 

@@ -1,4 +1,5 @@
 import { PhoneShell } from './components/ui/PhoneShell';
+import { useAudioUnlock } from './hooks/useAudioUnlock';
 import { useGameState } from './hooks/useGameState';
 import { useRoundFlow } from './hooks/useRoundFlow';
 import { AppRoutes } from './routes';
@@ -11,10 +12,16 @@ import { AppRoutes } from './routes';
  * transitions. The two APIs are passed down to pages via props (Phase 1
  * choice; Phase 2 may wrap them in a Context if prop drilling deepens).
  *
+ * `useAudioUnlock` listens at the document level for the first
+ * pointerdown / keydown and primes Howler so subsequent `play()` calls
+ * actually emit. The hook is mounted at the App root so it survives
+ * route changes and only attaches its listeners once per session.
+ *
  * Routing is handled inside `AppRoutes`; `BrowserRouter` is mounted in
  * `main.tsx` so test harnesses can swap in a `MemoryRouter` instead.
  */
 export function App() {
+  useAudioUnlock();
   const game = useGameState();
   const round = useRoundFlow();
 

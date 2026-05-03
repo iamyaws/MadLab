@@ -54,6 +54,17 @@ vi.mock('pixi.js', () => ({
   },
 }));
 
+// Howler (M19) is mocked here so the auto-arrival's tube-swoosh play()
+// does not reach jsdom's missing HTMLMediaElement.play implementation.
+// The runtime path works in the browser; this mock keeps the smoke test
+// quiet without hiding real failures (sound.ts's play() is itself
+// defensive against missing assets and locked AudioContexts).
+vi.mock('howler', () => ({
+  Howl: class {
+    play() {}
+  },
+}));
+
 const { App } = await import('./App');
 
 describe('App', () => {

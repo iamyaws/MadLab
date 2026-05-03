@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { GameStateApi } from '../hooks/useGameState';
 import type { RoundFlowApi } from '../hooks/useRoundFlow';
@@ -10,6 +10,7 @@ import { Fingerprint } from '../components/ui/Fingerprint';
 import { TabBar } from '../components/ui/TabBar';
 import { PixiRoot } from '../pixi/PixiRoot';
 import { OrbitStage } from '../pixi/OrbitStage';
+import { useSound } from '../hooks/useSound';
 
 /**
  * WorkshopPage (C1, route '/'). The main loop screen: customer hero card on
@@ -38,8 +39,28 @@ export interface WorkshopPageProps {
 
 export function WorkshopPage({ game, round }: WorkshopPageProps) {
   const navigate = useNavigate();
+  const { play } = useSound();
   const { state: gameState } = game;
   const { state: roundState, startArrival, togglePart, startTest } = round;
+
+  // Wrap togglePart so we can distinguish "added a part" from "removed
+  // a part" by inspecting the current picks before the reducer runs.
+  // Sound plays first; the reducer is synchronous so picks update on
+  // the next render, but we read state from the closure here.
+  const handleTogglePart = useCallback(
+    (partId: string) => {
+      const isAdding = !roundState.pickedPartIds.includes(partId);
+      // Guard against the cap-reached case so we do not emit a pick
+      // sound for a tap the reducer is about to ignore.
+      if (isAdding && roundState.pickedPartIds.length >= 4) {
+        togglePart(partId);
+        return;
+      }
+      play(isAdding ? 'partPick' : 'partUnpick');
+      togglePart(partId);
+    },
+    [roundState.pickedPartIds, togglePart, play],
+  );
 
   // Auto-queue the next customer when the workshop opens with an empty round.
   // Round-robin by catalogue length so the rotation advances with each
@@ -80,6 +101,7 @@ export function WorkshopPage({ game, round }: WorkshopPageProps) {
 
   const handleFire = () => {
     if (!canFire || !currentCustomer) return;
+    play('fireUp');
     const invention = compose(pickedParts, currentCustomer);
     startTest(invention);
     navigate('/test');
@@ -131,7 +153,7 @@ export function WorkshopPage({ game, round }: WorkshopPageProps) {
               parts={PARTS}
               selectedPartIds={roundState.pickedPartIds}
               lockedPartIds={lockedPartIds}
-              onPick={togglePart}
+              onPick={handleTogglePart}
               width={320}
               height={260}
             />

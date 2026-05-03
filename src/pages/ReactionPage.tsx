@@ -10,6 +10,8 @@ import { Fingerprint } from '../components/ui/Fingerprint';
 import { PartChip } from '../components/ui/PartChip';
 import { PartIcon } from '../components/ui/PartIcon';
 import { Customer as CustomerSvg } from '../components/customer/Customer';
+import { useSound } from '../hooks/useSound';
+import type { SoundId } from '../hooks/useSound';
 
 /**
  * ReactionPage (C5, route '/reaction'). Reaction tier in big Fraunces type,
@@ -74,6 +76,18 @@ const TIER_CHIP_STYLES: Record<Tier, TierStyles> = {
 };
 
 /**
+ * Map each resolved tier to its reaction sting. The four IDs are wired
+ * into `lib/sound`'s SOUND_DEFS table; see public/sounds/README.md for
+ * the asset shape.
+ */
+const TIER_REACTION_SOUND: Record<Tier, SoundId> = {
+  delight: 'cheer',
+  satisfied: 'satisfiedHum',
+  sortOf: 'sortOfBlip',
+  fail: 'glorifail',
+};
+
+/**
  * Synthesize a kid-friendly catalogue name from the customer + tier. The
  * counter is just `catalogue.length + 1` so each entry gets a stable
  * "Erfindung #N". A richer naming pass lands in Phase 2 with finished art.
@@ -99,6 +113,7 @@ function mintEntryId(): string {
 
 export function ReactionPage({ game, round }: ReactionPageProps) {
   const navigate = useNavigate();
+  const { play } = useSound();
   const {
     state: gameState,
     addCatalogueEntry,
@@ -136,6 +151,20 @@ export function ReactionPage({ game, round }: ReactionPageProps) {
         !unlockedSet.has(p.id),
     );
   }, [customer, invention, unlockedSet]);
+
+  // Reaction sting on mount: cheer / satisfiedHum / sortOfBlip / glorifail
+  // depending on the resolved tier. If a part unlocks this round, follow
+  // up with the unlock chime after a short delay so the cheer plays
+  // first and the chime layers cleanly on top.
+  const unlockingPartId = unlockingPart?.id;
+  const tier = invention?.tier;
+  useEffect(() => {
+    if (!tier) return;
+    play(TIER_REACTION_SOUND[tier]);
+    if (!unlockingPartId) return;
+    const handle = window.setTimeout(() => play('unlockChime'), 300);
+    return () => window.clearTimeout(handle);
+  }, [tier, unlockingPartId, play]);
 
   if (!customer || !invention) {
     return (
