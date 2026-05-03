@@ -35,3 +35,23 @@
     -webkit-font-smoothing: antialiased;
   }
 }
+
+/*
+ * mil-spark-fly. The test-chamber spark burst keyframe used by TestPage.
+ * Each spark element supplies its outward direction via the CSS custom
+ * properties --mil-spark-dx and --mil-spark-dy (set inline per-spark) so
+ * one keyframe drives twelve different trajectories. The reduced-motion
+ * media query above already collapses animation durations to ~0, so this
+ * keyframe self-disables when the user prefers reduced motion.
+ */
+@keyframes mil-spark-fly {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--mil-spark-dx, 0), var(--mil-spark-dy, 0))
+      rotate(720deg);
+    opacity: 0;
+  }
+}

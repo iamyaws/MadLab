@@ -55,3 +55,6 @@ coverage/
 
 # typescript build info
 *.tsbuildinfo
+
+# claude tooling (preview launch config, local-only)
+.claude/
