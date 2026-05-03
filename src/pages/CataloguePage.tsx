@@ -22,7 +22,7 @@ export function CataloguePage({ game }: CataloguePageProps) {
   const { state } = game;
 
   return (
-    <div className="relative flex-1 flex flex-col pt-[60px] pb-6">
+    <div className="relative flex-1 flex flex-col pt-[60px] pb-6 min-h-0">
       <header className="flex items-center justify-between gap-3 px-6 pb-2">
         <div className="flex flex-col gap-0.5">
           <div className="font-body font-extrabold text-[11px] uppercase tracking-widest text-ink-soft">
@@ -41,7 +41,10 @@ export function CataloguePage({ game }: CataloguePageProps) {
         </button>
       </header>
 
-      <div className="flex-1 flex flex-col gap-3 px-6 pt-2 pb-3 overflow-y-auto">
+      {/* Inner scroll area. `pb-[100px]` clears the absolutely positioned
+          tab bar at the bottom of the phone shell so the last grid row never
+          slides underneath it. */}
+      <div className="flex-1 flex flex-col gap-3 px-6 pt-2 pb-[100px] overflow-y-auto min-h-0">
         {/* Filter chips. Only "Alle" is wired in Phase 1. */}
         <div className="flex items-center gap-2 flex-wrap">
           <span className="inline-flex items-center gap-1.5 border-2 border-ink rounded-full bg-gold px-3.5 py-1.5 text-[14px] font-extrabold">

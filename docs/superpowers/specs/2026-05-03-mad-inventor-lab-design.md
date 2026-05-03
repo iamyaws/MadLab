@@ -296,7 +296,7 @@ All seven screens defined in the locked hi-fi-c.html wireframe. Brief implementa
 | Layer | Choice | Rationale |
 |-------|--------|-----------|
 | Build | Vite | Fast, familiar (BeyArena / Ronki) |
-| Framework | React 18 + TypeScript | Familiar, good UI ergonomics |
+| Framework | React 19 + TypeScript | Familiar, good UI ergonomics (forced by `@pixi/react@8` runtime requirement; M9 upgrade) |
 | Styling | Tailwind CSS | Utility-first, design-token friendly |
 | Canvas | PixiJS via `@pixi/react` | 2D WebGL renderer for sprite-heavy workshop scene; significantly better Fire-tablet performance than DOM with 15-30 simultaneous animated layers |
 | UI animation | `motion` (Framer Motion successor) | For UI shell animations (chips, cards, transitions) |

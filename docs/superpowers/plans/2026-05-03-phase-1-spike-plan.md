@@ -69,8 +69,10 @@ BeyArena uses Zustand for cross-route session state, but Mad Inventor Lab in Pha
 
 **Notes:** Mirror BeyArena's setup minus the PWA plugin (deferred to Phase 3) and minus Supabase chunking. Use `npm` (matches BeyArena). TypeScript in strict mode with `noUnusedLocals` and `noUnusedParameters` enabled (BeyArena pattern, catches dead code early).
 
-Dependencies (production): `react`, `react-dom`, `react-router-dom`, `pixi.js`, `@pixi/react`, `motion`.
+Dependencies (production): `react` (19.x), `react-dom` (19.x), `react-router-dom`, `pixi.js`, `@pixi/react`, `motion`.
 Dev: `vite`, `@vitejs/plugin-react`, `typescript`, `@types/react`, `@types/react-dom`, `tailwindcss`, `autoprefixer`, `postcss`, `eslint`, `@typescript-eslint/eslint-plugin`, `@typescript-eslint/parser`, `eslint-plugin-react-hooks`, `prettier`, `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `jsdom`.
+
+> **React version correction:** the original M1 draft pinned React 18 with a `package.json` `overrides` block to silence `@pixi/react@8`'s peer warning. M9 discovered this only worked at install time; `@pixi/react@8`'s runtime requires React >= 19, so M9 upgraded both `react` and `react-dom` to 19.x. The `overrides` block now points at the new `$react`/`$react-dom` placeholders instead of pinning a stale major. Future plans should treat React 19 as the minimum.
 
 Scripts (BeyArena pattern):
 ```json

@@ -94,7 +94,7 @@ export function WorkshopPage({ game, round }: WorkshopPageProps) {
   };
 
   return (
-    <div className="relative flex-1 flex flex-col pt-[60px] pb-6">
+    <div className="relative flex-1 flex flex-col pt-[60px] pb-6 min-h-0">
       {/* Top nav: eyebrow + title + star count chip. */}
       <header className="flex items-center justify-between gap-3 px-6 pb-2">
         <div className="flex flex-col gap-0.5">
@@ -111,7 +111,12 @@ export function WorkshopPage({ game, round }: WorkshopPageProps) {
         </div>
       </header>
 
-      <div className="flex-1 flex flex-col gap-3.5 px-6 pt-2 pb-3 overflow-hidden">
+      {/* Inner content area. `pb-[100px]` clears the absolutely positioned
+          tab bar at the bottom of the phone shell (72px tall + 18px bottom
+          inset = 90px floor) so the "Feuer frei!" action row sits with at
+          least 10px of breathing room above it. The orbit (`min-h-[200px]`)
+          shrinks to fit the remaining vertical space. */}
+      <div className="flex-1 flex flex-col gap-3.5 px-6 pt-2 pb-[100px] overflow-hidden min-h-0">
         {currentCustomer ? (
           <CustomerHeroCard
             customer={currentCustomer}
