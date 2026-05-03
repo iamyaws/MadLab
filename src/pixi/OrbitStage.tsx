@@ -7,8 +7,9 @@ import {
   useState,
   type MutableRefObject,
 } from 'react';
-import { Container, Graphics, Text, TextStyle } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
 import type { Part } from '../lib/types';
+import { PartSprite } from './PartSprite';
 
 /**
  * OrbitStage. The 3D-tilted orbit of pickable parts arranged in a ring around
@@ -36,34 +37,20 @@ export interface OrbitStageProps {
 const DEFAULT_SIZE = 320;
 const ORBIT_RADIUS_X = 140;
 const ORBIT_RADIUS_Y = 78;
-const PART_RADIUS = 27;
 const PART_TARGET = 54;
 const CENTER_SIZE = 90;
 const ROTATION_PERIOD_SECONDS = 32;
 
-const COLOR_PAPER = 0xfffbef;
 const COLOR_INK = 0x1f1a2a;
-const COLOR_GOLD = 0xffc93c;
-const COLOR_LOCKED = 0xc8b894;
 const COLOR_PRIMARY = 0x3cc4da;
-
-const LABEL_STYLE = new TextStyle({
-  fontFamily: 'Nunito, system-ui, sans-serif',
-  fontSize: 12,
-  fontWeight: '800',
-  fill: COLOR_INK,
-  align: 'center',
-});
 
 interface PartRefs {
   containerRef: MutableRefObject<Container | null>;
-  labelRef: MutableRefObject<Text | null>;
 }
 
 function makePartRefs(): PartRefs {
   return {
     containerRef: { current: null },
-    labelRef: { current: null },
   };
 }
 
@@ -125,10 +112,12 @@ export function OrbitStage({
       const orbit = orbitRef.current;
       if (!orbit) return;
       orbit.rotation += radiansPerFrame * ticker.deltaTime;
-      // Counter-rotate each part label so text remains upright through spin.
+      // Counter-rotate each part container so the icon (a cog with teeth
+      // at the top, a beaker with its mouth up) stays upright through the
+      // orbit spin. Mirrors the wireframe's `.upright` chip.
       for (const refs of partRefsMap.current.values()) {
-        const label = refs.labelRef.current;
-        if (label) label.rotation = -orbit.rotation;
+        const container = refs.containerRef.current;
+        if (container) container.rotation = -orbit.rotation;
       }
     },
   });
@@ -180,7 +169,6 @@ export function OrbitStage({
               isLocked={isLocked}
               onPick={onPick}
               containerRef={refs.containerRef}
-              labelRef={refs.labelRef}
             />
           );
         })}
@@ -200,7 +188,6 @@ interface PartNodeProps {
   isLocked: boolean;
   onPick: (partId: string) => void;
   containerRef: MutableRefObject<Container | null>;
-  labelRef: MutableRefObject<Text | null>;
 }
 
 function PartNode({
@@ -211,25 +198,7 @@ function PartNode({
   isLocked,
   onPick,
   containerRef,
-  labelRef,
 }: PartNodeProps) {
-  const drawPart = useCallback(
-    (g: Graphics) => {
-      g.clear();
-      const fillColor = isSelected
-        ? COLOR_GOLD
-        : isLocked
-          ? COLOR_LOCKED
-          : COLOR_PAPER;
-      const fillAlpha = isLocked ? 0.55 : 1;
-      const strokeWidth = isSelected ? 3.5 : 2.5;
-      g.roundRect(-PART_RADIUS, -PART_RADIUS, PART_TARGET, PART_TARGET, 14);
-      g.fill({ color: fillColor, alpha: fillAlpha });
-      g.stroke({ width: strokeWidth, color: COLOR_INK, alpha: fillAlpha });
-    },
-    [isSelected, isLocked],
-  );
-
   const handlePointerDown = useCallback(() => {
     if (isLocked) return;
     onPick(part.id);
@@ -249,13 +218,11 @@ function PartNode({
       cursor={isLocked ? 'default' : 'pointer'}
       onPointerDown={handlePointerDown}
     >
-      <pixiGraphics draw={drawPart} />
-      <pixiText
-        ref={labelRef}
-        text={part.id}
-        anchor={0.5}
-        style={LABEL_STYLE}
-        alpha={isLocked ? 0.55 : 1}
+      <PartSprite
+        partId={part.id}
+        size={PART_TARGET}
+        selected={isSelected}
+        locked={isLocked}
       />
     </pixiContainer>
   );

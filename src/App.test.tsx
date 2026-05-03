@@ -36,9 +36,18 @@ vi.mock('pixi.js', () => ({
   Container: class {},
   Graphics: class {},
   Text: class {},
-  // OrbitStage instantiates `new TextStyle({...})` at module scope, so the
-  // stub must accept an arbitrary options arg without complaining.
+  // OrbitStage instantiated `new TextStyle({...})` at module scope before
+  // M14; the stub stays for back-compat in case a future module touches it.
   TextStyle: class {
+    constructor(...args: unknown[]) {
+      void args;
+    }
+  },
+  // PartSprite (M14) constructs `new GraphicsPath(d)` to convert each part's
+  // SVG path string to a Pixi path. The stub accepts the d-string arg so
+  // imports resolve cleanly even though the draw callback never fires under
+  // the stubbed Application (children are not rendered).
+  GraphicsPath: class {
     constructor(...args: unknown[]) {
       void args;
     }
