@@ -1,17 +1,19 @@
 import type { Part } from '../../lib/types';
+import { PartIcon } from './PartIcon';
 
 /**
  * PartChip. The rounded gold chip that represents a picked part on the
  * workshop's "X / 4 picked" row and on the catalogue entry preview. Each
- * chip shows a small placeholder icon (the first letter of the part id in
- * a colored circle) plus the German label.
+ * chip shows the part's SVG glyph in a small ink-bordered paper circle,
+ * plus the German label.
  *
  * If `onRemove` is provided, a small × icon-button renders on the right and
  * fires the callback when tapped. Otherwise the chip renders read-only.
  *
- * Phase-1 placeholder icon: a 22px circle with the part's first letter,
- * matching the wireframe's `Ic` glyphs in scale. Phase 2 swaps in the
- * proper SVG icons from the design spec's part roster.
+ * The icon comes from the shared PartIcon component (M13). The chip already
+ * announces the part name as visible text, so the icon's ariaLabel is
+ * passed for completeness but the surrounding wrapper is `aria-hidden` so
+ * the icon does not double-announce in screen readers.
  */
 export interface PartChipProps {
   part: Part;
@@ -19,15 +21,13 @@ export interface PartChipProps {
 }
 
 export function PartChip({ part, onRemove }: PartChipProps) {
-  const initial = part.id.charAt(0).toUpperCase();
-
   return (
     <span className="inline-flex items-center gap-2 border-2 border-ink rounded-full bg-gold px-3 py-1.5 text-[14px] font-extrabold leading-none whitespace-nowrap">
       <span
         aria-hidden="true"
-        className="flex items-center justify-center w-[22px] h-[22px] rounded-full bg-paper border-2 border-ink text-[11px] font-black"
+        className="flex items-center justify-center w-[22px] h-[22px] rounded-full bg-paper border-2 border-ink"
       >
-        {initial}
+        <PartIcon partId={part.id} size={14} ariaLabel={part.labelDe} />
       </span>
       <span>{part.labelDe}</span>
       {onRemove ? (

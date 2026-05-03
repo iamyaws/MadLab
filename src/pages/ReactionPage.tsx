@@ -8,6 +8,7 @@ import { pickReactionQuote } from '../data/reactionQuotes';
 import type { CatalogueEntry, Customer, Tier } from '../lib/types';
 import { Fingerprint } from '../components/ui/Fingerprint';
 import { PartChip } from '../components/ui/PartChip';
+import { PartIcon } from '../components/ui/PartIcon';
 import { Customer as CustomerSvg } from '../components/customer/Customer';
 
 /**
@@ -141,9 +142,6 @@ export function ReactionPage({ game, round }: ReactionPageProps) {
   const tierChipStyle = TIER_CHIP_STYLES[invention.tier];
   const reactionQuote = pickReactionQuote(customer.id, invention.tier);
   const entryName = synthesizeName(customer, gameState.catalogue.length + 1);
-  const partsScript = invention.parts
-    .map((p) => p.labelDe.toLowerCase())
-    .join(' · ');
 
   const handleContinue = () => {
     const entry: CatalogueEntry = {
@@ -185,8 +183,12 @@ export function ReactionPage({ game, round }: ReactionPageProps) {
 
         {unlockingPart ? (
           <div className="flex items-center gap-3.5 bg-gold border-[2.5px] border-ink rounded-2xl p-4 shadow-[0_4px_0_rgba(31,26,42,0.14)]">
-            <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-paper border-[2.5px] border-ink font-display font-black text-[26px]">
-              {unlockingPart.id.charAt(0).toUpperCase()}
+            <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-paper border-[2.5px] border-ink">
+              <PartIcon
+                partId={unlockingPart.id}
+                size={36}
+                ariaLabel={unlockingPart.labelDe}
+              />
             </div>
             <div className="flex-1 min-w-0">
               <div className="font-body font-extrabold text-[11px] uppercase tracking-widest text-ink-soft">
@@ -218,8 +220,23 @@ export function ReactionPage({ game, round }: ReactionPageProps) {
               <div className="font-display font-extrabold text-[17px] tracking-tight truncate">
                 {entryName}
               </div>
-              <div className="font-script text-[16px] text-ink-soft mt-0.5 truncate">
-                {partsScript}
+              <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                {invention.parts.map((part, idx) => (
+                  <span
+                    key={`${part.id}-${idx}`}
+                    className="inline-flex items-center gap-1 font-script text-[15px] text-ink-soft"
+                  >
+                    <PartIcon
+                      partId={part.id}
+                      size={20}
+                      ariaLabel={part.labelDe}
+                    />
+                    <span>{part.labelDe}</span>
+                    {idx < invention.parts.length - 1 ? (
+                      <span aria-hidden="true">·</span>
+                    ) : null}
+                  </span>
+                ))}
               </div>
             </div>
           </div>

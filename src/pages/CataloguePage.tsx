@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import type { GameStateApi } from '../hooks/useGameState';
 import { getCustomerById } from '../data/customers';
 import { Fingerprint } from '../components/ui/Fingerprint';
+import { PartIcon } from '../components/ui/PartIcon';
 
 /**
  * CataloguePage (C6, route '/catalogue'). Phase-1 stub: a simple grid of
@@ -71,9 +72,6 @@ export function CataloguePage({ game }: CataloguePageProps) {
           <div className="grid grid-cols-2 gap-3">
             {state.catalogue.map((entry) => {
               const customer = getCustomerById(entry.customerId);
-              const partsScript = entry.parts
-                .map((p) => p.labelDe.toLowerCase())
-                .join(' · ');
               return (
                 <article
                   key={entry.id}
@@ -90,8 +88,15 @@ export function CataloguePage({ game }: CataloguePageProps) {
                       für {customer.nameDe}
                     </div>
                   ) : null}
-                  <div className="font-script text-[12px] text-ink-soft truncate">
-                    {partsScript}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {entry.parts.map((part, idx) => (
+                      <PartIcon
+                        key={`${part.id}-${idx}`}
+                        partId={part.id}
+                        size={22}
+                        ariaLabel={part.labelDe}
+                      />
+                    ))}
                   </div>
                   <Fingerprint scores={entry.traitScores} />
                 </article>

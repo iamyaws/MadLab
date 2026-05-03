@@ -1,14 +1,20 @@
 import type { Part } from '../lib/types';
 
 /**
- * The 12-part Phase-1 roster. Trait contributions match the spec balance
- * table at `docs/superpowers/specs/2026-05-03-mad-inventor-lab-design.md`.
+ * The 13-part roster (12 Phase-1 parts + the Moonling-Week Day 7 reward).
+ * Trait contributions match the spec balance table at
+ * `docs/superpowers/specs/2026-05-03-mad-inventor-lab-design.md`.
  *
- * Parts 1-9 are visible from the first round. Parts 10-12 are unlock-pool
- * entries gated behind a customer's first 'delight':
+ * Parts 1-9 are visible from the first round. Parts 10-12 are regular
+ * unlock-pool entries gated behind a customer's first 'delight':
  * - magnet  Sir Knirps (crunch) first delight
  * - eye     Kit first delight
  * - scope   Bo first delight
+ *
+ * Part 13 (`moonbeam`) is the Day 7 Moonling-Week reward, gated on Moonling
+ * delight; the Daily-Special flow in M17/M18 handles the Day-7 timing.
+ * It does not appear in `STARTER_PART_IDS` and is ignored by the regular
+ * unlock-on-delight detector until Moonling Week is wired.
  *
  * `STARTER_PART_IDS` below seeds `unlockedPartIds` in a default save.
  */
@@ -99,6 +105,14 @@ export const PARTS: Part[] = [
     contributes: { zappy: 1, fun: 1 },
     category: 'sensory',
     unlock: { customerId: 'bo', tier: 'delight' },
+  },
+  {
+    id: 'moonbeam',
+    labelDe: 'Mondstrahl',
+    behaviorVerb: 'glow',
+    contributes: { fun: 1, cozy: 1, zappy: 1 },
+    category: 'energy',
+    unlock: { customerId: 'moonling', tier: 'delight' },
   },
 ];
 
