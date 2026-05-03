@@ -105,7 +105,7 @@
 
 ### Directory structure
 
-- `src/arcs/`, `src/companion/`, `src/dream/` — game-logic domains.
+- `src/arcs/`, `src/companion/`, `src/dream/` for game-logic domains.
 - `src/components/` with `drachennest/`, `onboarding/` subdirs.
 - `src/context/` for React Context (Auth, Game, Task, CelebrationQueue, LanguageContext, i18n).
 - `src/hooks/`, `src/lib/`, `src/pages/`, `src/data/`, `src/utils/`, `src/types/`, `src/test/`.
