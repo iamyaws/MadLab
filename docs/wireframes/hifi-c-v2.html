@@ -1,0 +1,978 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mad Inventor Lab — Hi-Fi (Direction C)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800;9..144,900&family=Nunito:wght@500;600;700;800;900&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFE9C4; --bg-2:#FFD089; --paper:#FFFBEF;
+  --ink:#1F1A2A; --ink-soft:#6A6275;
+  --primary:#3CC4DA; --primary-deep:#1F88A0;
+  --gold:#FFC93C; --gold-deep:#D89C0A;
+  --plum:#B970D2; --rose:#FF6F61; --sage:#7DD66F;
+  --line:#1F1A2A;
+
+  --r-sm:14px; --r-md:20px; --r-lg:28px; --r-xl:36px;
+  --shadow-1: 0 3px 0 rgba(31,26,42,.18);
+  --shadow-2: 0 5px 0 var(--ink);
+  --shadow-card: 0 4px 0 rgba(31,26,42,.14);
+}
+[data-art="watercolor"]{
+  --bg:#FFF6E5; --bg-2:#FFE6B0; --paper:#FFFBF1;
+  --primary:#7AB6D9; --primary-deep:#3A6D94;
+  --gold:#F6C453; --gold-deep:#E0A12C;
+  --plum:#A26FB6; --rose:#E76F51; --sage:#8FB979;
+}
+[data-art="ink"]{
+  --bg:#FBF6E8; --bg-2:#F0E5C8; --paper:#FFFDF6;
+  --primary:#3FA7C4; --primary-deep:#1F5E73;
+  --gold:#F2B33A; --gold-deep:#B07F0E;
+  --plum:#7A4FA8; --rose:#D24E32; --sage:#6FA259;
+}
+[data-art="cel"]{
+  --bg:#FFE9C4; --bg-2:#FFD089; --paper:#FFFBEF;
+  --primary:#3CC4DA; --primary-deep:#1F88A0;
+  --gold:#FFC93C; --gold-deep:#D89C0A;
+  --plum:#B970D2; --rose:#FF6F61; --sage:#7DD66F;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;background:#E9DFC2;color:var(--ink);font-family:'Nunito',system-ui,sans-serif;font-weight:600;-webkit-font-smoothing:antialiased;}
+button{font:inherit;color:inherit;border:none;background:none;cursor:pointer;font-weight:800;}
+
+.app-bg{
+  min-height:100vh;
+  background:
+    radial-gradient(60vh 50vh at 80% 10%, rgba(60,196,218,0.30), transparent 60%),
+    radial-gradient(70vh 60vh at 10% 90%, rgba(255,201,60,0.32), transparent 60%),
+    radial-gradient(50vh 50vh at 90% 90%, rgba(185,112,210,0.20), transparent 60%),
+    var(--bg);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:48px 24px 96px;gap:36px;flex-wrap:wrap;
+}
+
+/* ======== Phone shell ======== */
+.phone{
+  width:390px;height:820px;background:var(--paper);
+  border:2.5px solid var(--line);border-radius:48px;
+  box-shadow: 0 12px 0 rgba(31,26,42,.10), 0 36px 60px rgba(31,26,42,.18);
+  position:relative;overflow:hidden;display:flex;flex-direction:column;
+}
+.phone::before{
+  content:'';position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  width:120px;height:30px;background:var(--ink);border-radius:18px;z-index:30;
+}
+.status{
+  position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;
+  padding:16px 28px 0;font-family:'Nunito';font-weight:800;font-size:15px;color:var(--ink);z-index:20;
+}
+.status .right{display:flex;gap:6px;align-items:center;font-size:13px;}
+
+/* ======== Layout system: nav, content, action ======== */
+.nav{
+  position:relative;z-index:5;
+  padding: 60px 24px 8px; display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.nav-title{display:flex;flex-direction:column;gap:2px;}
+.nav-title .eyebrow{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-soft);font-weight:800;}
+.nav-title h1{font-family:'Fraunces';font-weight:900;font-size:26px;letter-spacing:-0.02em;margin:0;line-height:1;}
+.icon-btn{
+  width:44px;height:44px;border-radius:50%;background:var(--paper);
+  border:2.5px solid var(--line);display:inline-flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-card);
+}
+
+.content{
+  position:relative;flex:1;display:flex;flex-direction:column;gap:16px;
+  padding: 8px 24px 24px;overflow:hidden;
+}
+.content.has-tabbar{padding-bottom: 100px;}
+
+.action{
+  position:relative;display:flex;flex-direction:column;gap:10px;
+}
+
+/* ======== Tab bar (bottom nav) ======== */
+.tabbar{
+  position:absolute;left:18px;right:18px;bottom:18px;height:72px;background:var(--paper);
+  border:2.5px solid var(--line);border-radius:30px;display:flex;align-items:center;justify-content:space-around;
+  box-shadow:0 8px 0 rgba(31,26,42,.10);z-index:5;padding: 0 8px;
+}
+.tab{
+  width:54px;height:54px;border-radius:18px;display:flex;align-items:center;justify-content:center;
+  color:var(--ink-soft);font-weight:900;font-size:22px;
+}
+.tab.active{background:var(--gold);color:var(--ink);box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);}
+
+/* ======== Typography ======== */
+h1,h2,h3{font-family:'Fraunces',serif;font-weight:900;letter-spacing:-0.01em;margin:0;color:var(--ink)}
+.eyebrow{font-family:'Nunito';font-weight:800;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-soft)}
+.script{font-family:'Caveat',cursive;font-weight:700}
+.h-quote{font-family:'Fraunces';font-weight:800;font-size:20px;line-height:1.15;letter-spacing:-0.01em;}
+
+/* ======== Cards & chips ======== */
+.card{
+  background:var(--paper);border:2.5px solid var(--line);border-radius:var(--r-md);
+  padding:16px;box-shadow:var(--shadow-card);
+}
+.card.hero{background:var(--bg-2);}
+.card.gold{background:var(--gold);}
+.card.dark{background:var(--ink);color:var(--paper);border-color:var(--line);}
+.card.dark .eyebrow{color:rgba(255,251,239,.7);}
+
+.chip{
+  display:inline-flex;align-items:center;gap:6px;border:2px solid var(--line);border-radius:999px;
+  padding:6px 12px;background:var(--paper);font-size:13px;font-weight:800;line-height:1;
+  white-space:nowrap;flex-shrink:0;
+}
+.btn{white-space:nowrap;}
+.chip.gold{background:var(--gold)}
+.chip.plum{background:var(--plum);color:#fff}
+.chip.dark{background:var(--ink);color:var(--gold)}
+.chip.lg{padding:8px 14px;font-size:14px;}
+
+/* ======== Buttons (≥56px height for kid hit targets) ======== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  border:2.5px solid var(--line);border-radius:999px;
+  min-height:56px;padding:12px 24px;
+  background:var(--gold);font-family:'Nunito';font-weight:900;font-size:17px;letter-spacing:-0.01em;
+  box-shadow:var(--shadow-2);transition: transform .12s ease, box-shadow .12s ease;
+}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--ink)}
+.btn.primary{background:var(--rose);color:#fff;}
+.btn.ghost{background:var(--paper);}
+.btn.big{min-height:64px;padding:16px 28px;font-size:19px;border-radius:32px;}
+
+/* ======== Layout helpers ======== */
+.row{display:flex;gap:10px;align-items:center}
+.between{justify-content:space-between}
+.col{display:flex;flex-direction:column;gap:10px}
+.grow{flex:1}
+
+/* ======== The pneumatic tube — only on Workshop, Arrival, Reaction, Daily ======== */
+.tube{position:absolute;top:0;bottom:0;right:14px;width:24px;z-index:1;pointer-events:none;}
+.tube::before{
+  content:'';position:absolute;inset:0;border:2.5px solid var(--line);border-radius:14px;
+  background: repeating-linear-gradient(180deg, var(--primary) 0 14px, var(--primary-deep) 14px 18px);
+  box-shadow: inset 2px 0 0 rgba(255,255,255,.30), inset -2px 0 0 rgba(0,0,0,.20);
+}
+.tube .ring{position:absolute;left:-5px;right:-5px;height:7px;border:2px solid var(--line);border-radius:5px;background:var(--ink);}
+
+.tube-pop{
+  position:absolute;right:8px;top:60px;width:38px;height:38px;background:var(--gold);
+  border:2.5px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:900;animation: tubedrop 2.6s ease-in-out infinite;z-index:6;font-size:18px;
+}
+@keyframes tubedrop {
+  0%,15% {transform: translateY(-50px) scale(.8); opacity:0}
+  35% {transform: translateY(0) scale(1); opacity:1}
+  70% {transform: translateY(8px) scale(.96); opacity:1}
+  100% {transform: translateY(72px) scale(.9); opacity:0}
+}
+
+/* ======== Orbit (3D tilted) ======== */
+.orbit-stage{
+  position:relative;flex:1;display:flex;align-items:center;justify-content:center;
+  perspective:900px;min-height:240px;
+}
+.orbit{position:relative;width:280px;height:280px;border-radius:50%;transform: rotateX(56deg);transform-style:preserve-3d;}
+.orbit .ring{position:absolute;inset:0;border-radius:50%;border:2px dashed var(--ink);opacity:.40;}
+.orbit .floor{position:absolute;inset:8%;border-radius:50%;background: radial-gradient(closest-side, rgba(255,255,255,.7), rgba(255,255,255,0));}
+.orbit-spin{position:absolute;inset:0;animation: spin 32s linear infinite;}
+@keyframes spin { to { transform: rotateZ(360deg); } }
+.part{
+  position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;
+  background:var(--paper);border:2.5px solid var(--line);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 0 rgba(31,26,42,.20);
+  transform-style:preserve-3d;
+}
+.part.sel{background:var(--gold);}
+.part.lock{opacity:.55;background:repeating-linear-gradient(45deg, var(--paper) 0 4px, var(--bg-2) 4px 8px);}
+.part .upright{transform: rotateX(-56deg);display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
+.contraption-center{position:absolute;left:50%;top:50%;transform: translate(-50%,-50%) rotateX(-56deg);width:120px;height:120px;display:flex;align-items:center;justify-content:center;}
+
+/* ======== Speech bubble ======== */
+.bubble{
+  position:relative;background:var(--paper);border:2.5px solid var(--line);border-radius:24px;
+  padding:14px 18px;box-shadow:var(--shadow-card);
+  font-family:'Fraunces';font-weight:800;font-size:19px;line-height:1.2;
+}
+.bubble::after{
+  content:'';position:absolute;left:32px;bottom:-12px;width:18px;height:18px;
+  background:var(--paper);border-right:2.5px solid var(--line);border-bottom:2.5px solid var(--line);transform:rotate(45deg);
+}
+
+/* ======== SFX visual notes ======== */
+.sfx{position:absolute;font-family:'Caveat';font-weight:700;font-size:24px;color:var(--rose);pointer-events:none;text-shadow: 1.5px 1.5px 0 var(--paper);}
+.sfx.cool{color:var(--primary-deep)}
+.sfx.warm{color:var(--gold-deep)}
+
+/* ======== Test boom ======== */
+.boom{position:absolute;inset:0;pointer-events:none;}
+.spark{
+  position:absolute;width:14px;height:14px;background:var(--gold);border:2px solid var(--line);border-radius:3px;
+  animation: sparkfly 1.6s ease-out infinite;
+}
+@keyframes sparkfly { 0%{transform:translate(0,0) rotate(0);opacity:1} 100%{transform: translate(var(--dx),var(--dy)) rotate(720deg); opacity:0} }
+.shake{animation: shake .9s ease-in-out infinite;}
+@keyframes shake { 0%,100%{transform:translate(0,0)} 20%{transform:translate(-3px,2px)} 40%{transform:translate(3px,-2px)} 60%{transform:translate(-2px,-2px)} 80%{transform:translate(2px,2px)} }
+
+/* ======== Flipbook ======== */
+.book{display:flex;width:100%;flex:1;perspective:1400px;gap:0;overflow:hidden;border-radius:var(--r-md);}
+.page{
+  flex:1;min-width:0;background:var(--paper);border:2.5px solid var(--line);box-shadow:var(--shadow-card);
+  padding:14px;display:flex;flex-direction:column;gap:8px;
+}
+.page.left{border-radius:var(--r-md) 0 0 var(--r-md);transform: rotateY(-3deg);transform-origin:right center;}
+.page.right{border-radius:0 var(--r-md) var(--r-md) 0;transform: rotateY(3deg);transform-origin:left center;}
+
+/* ======== Hatched placeholder ======== */
+.placeholder{
+  background: repeating-linear-gradient(45deg, var(--paper) 0 8px, var(--bg-2) 8px 9px);
+  border:2px dashed var(--line);border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-family:'Caveat';color:var(--ink-soft);font-size:18px;
+}
+
+/* ======== Daily glow ======== */
+.daily-card{
+  background:linear-gradient(160deg, var(--ink) 0%, #2D2542 100%); color:var(--paper);
+  border:2.5px solid var(--line);border-radius:var(--r-lg);padding:20px;position:relative;overflow:hidden;
+  box-shadow: 0 0 0 4px rgba(255,201,60,.30), 0 8px 0 rgba(31,26,42,.20);
+}
+.daily-card .eyebrow{color:rgba(255,251,239,.7);}
+.daily-card::before{content:'';position:absolute;inset:-30%;background:radial-gradient(closest-side, rgba(255,201,60,.45), transparent 60%);animation: pulse 3.4s ease-in-out infinite;}
+@keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:.9} }
+.spark-bg{position:absolute;inset:0;pointer-events:none;}
+.spark-bg span{position:absolute;width:6px;height:6px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px var(--gold);animation:twinkle 2.4s ease-in-out infinite;}
+@keyframes twinkle { 0%,100%{opacity:.2;transform:scale(.7)} 50%{opacity:1;transform:scale(1.2)} }
+
+/* ======== Reduced motion ======== */
+@media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation-duration:0.001ms!important;animation-iteration-count:1!important;transition-duration:0.001ms!important} }
+.reduced-motion *,.reduced-motion *::before,.reduced-motion *::after{animation:none!important;transition:none!important;}
+
+/* ======== Header chrome ======== */
+.back-link{
+  position:fixed;top:18px;left:18px;background:var(--paper);border:2.5px solid var(--line);border-radius:999px;
+  padding:10px 16px;font-weight:800;font-size:14px;text-decoration:none;color:var(--ink);
+  box-shadow:0 4px 0 rgba(0,0,0,.18);z-index:50;
+}
+.title-strip{
+  width:100%;display:flex;align-items:flex-end;justify-content:space-between;
+  padding: 12px 32px 0 240px;color:var(--ink);
+  font-family:'Fraunces';font-weight:900;font-size:26px;letter-spacing:-0.01em;
+}
+.title-strip .sub{font-family:'Nunito';font-weight:800;font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.14em;}
+.title-strip .right-sub{text-align:right;line-height:1.4;}
+
+/* ======== Caption under each phone ======== */
+.cap{
+  width:390px;text-align:center;margin-top:18px;
+  font-family:'Fraunces';font-weight:800;font-size:17px;color:var(--ink);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.cap .num{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--ink);color:var(--gold);border-radius:999px;
+  padding:4px 12px;font-family:'Nunito';font-weight:900;font-size:12px;letter-spacing:.10em;
+}
+.frame-wrap{display:flex;flex-direction:column;align-items:center;}
+
+/* ======== Test screen trait sensor cells ======== */
+.judge{display:grid;grid-template-columns: repeat(4, 1fr);gap:8px;}
+.judge-cell{
+  background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:10px 6px 8px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:800;
+  text-transform:uppercase;letter-spacing:0.06em;
+}
+.judge-cell.on{background:var(--gold);}
+.judge-cell .glyph{font-size:22px;line-height:1;}
+.judge-cell .dots{display:flex;gap:3px;margin-top:2px;}
+.judge-cell .dots span{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--line);background:var(--paper);}
+.judge-cell .dots span.on{background:var(--ink);}
+
+/* ======== Trait fingerprint (4-dot scoreline) ======== */
+.fingerprint{
+  display:inline-flex;align-items:center;gap:8px;
+  border:2px solid var(--line);border-radius:999px;padding:5px 10px;background:var(--paper);
+  font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;
+}
+.fingerprint .grp{display:inline-flex;align-items:center;gap:3px;}
+.fingerprint .grp .lbl{margin-right:2px;color:var(--ink-soft);font-size:10px;}
+.fingerprint .dot{width:7px;height:7px;border-radius:50%;border:1.5px solid var(--line);background:var(--paper);}
+.fingerprint .dot.on{background:var(--ink);}
+.fingerprint.predict{border-style:dashed;background:transparent;}
+
+/* Daily ribbon — week dots */
+.week{display:flex;gap:6px;align-items:center;}
+.week .pip{
+  width:14px;height:14px;border-radius:50%;border:2px solid var(--line);background:var(--paper);
+}
+.week .pip.done{background:var(--ink-soft);}
+.week .pip.today{background:var(--gold);box-shadow:0 0 0 3px rgba(255,201,60,.35);}
+.week .lbl{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-soft);}
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<a class="back-link" href="wireframes.html">← back to wireframes</a>
+<div id="root"></div>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect, useMemo } = React;
+const { TweaksPanel, useTweaks, TweakSection, TweakRadio, TweakToggle } = window;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "art": "cel",
+  "reducedMotion": false,
+  "showSfx": true,
+  "explosion": "big"
+}/*EDITMODE-END*/;
+
+// ====================================================================
+// Icons
+// ====================================================================
+const Ic = ({type,size=28})=>{
+  const s=size,sw=2.4,stroke="#1F1A2A";
+  const p={width:s,height:s,viewBox:"0 0 32 32",fill:"none",stroke,strokeWidth:sw,strokeLinecap:"round",strokeLinejoin:"round"};
+  switch(type){
+    case 'cog': return (<svg {...p}>
+      <circle cx="16" cy="16" r="6" fill="var(--gold)"/>
+      {[0,45,90,135,180,225,270,315].map(a=>{const r1=8,r2=12,r=a*Math.PI/180;return <line key={a} x1={16+Math.cos(r)*r1} y1={16+Math.sin(r)*r1} x2={16+Math.cos(r)*r2} y2={16+Math.sin(r)*r2}/>})}
+      <circle cx="16" cy="16" r="2" fill={stroke}/>
+    </svg>);
+    case 'spring': return (<svg {...p}><path d="M8 8 Q16 4 24 8 Q8 12 24 14 Q8 16 24 18 Q8 20 24 22 Q16 26 8 22"/></svg>);
+    case 'beaker': return (<svg {...p}><path d="M11 6 H21 M12 6 V14 L7 24 Q7 27 10 27 H22 Q25 27 25 24 L20 14 V6" fill="var(--primary)"/></svg>);
+    case 'bolt': return (<svg {...p}><path d="M17 4 L8 18 H15 L13 28 L23 13 H16 Z" fill="var(--gold)"/></svg>);
+    case 'jelly': return (<svg {...p}><path d="M8 16 Q8 8 16 8 Q24 8 24 16 V22 Q24 26 20 26 Q19 24 16 26 Q13 24 12 26 Q8 26 8 22 Z" fill="var(--sage)"/><circle cx="13" cy="14" r="1.2" fill={stroke}/><circle cx="19" cy="14" r="1.2" fill={stroke}/></svg>);
+    case 'sock': return (<svg {...p}><path d="M12 4 H20 V16 L26 22 V27 H10 V22 Z" fill="var(--rose)"/><path d="M12 8 H20"/></svg>);
+    case 'bell': return (<svg {...p}><path d="M9 22 Q9 10 16 8 Q23 10 23 22 Z" fill="var(--gold)"/><path d="M7 22 H25"/><circle cx="16" cy="25" r="1.6" fill={stroke}/></svg>);
+    case 'feather': return (<svg {...p}><path d="M6 26 Q14 24 20 18 Q26 12 24 6 Q14 8 10 16 Q8 22 6 26 Z" fill="var(--primary)"/><path d="M6 26 L20 12"/></svg>);
+    case 'cloud': return (<svg {...p}><path d="M9 20 Q5 20 5 16 Q5 12 10 12 Q11 8 16 8 Q22 8 23 13 Q28 13 28 17 Q28 20 24 20 Z" fill="var(--primary)"/></svg>);
+    case 'magnet': return (<svg {...p}><path d="M8 6 V18 Q8 24 16 24 Q24 24 24 18 V6 H20 V18 Q20 20 16 20 Q12 20 12 18 V6 Z" fill="var(--rose)"/><path d="M8 6 H12 M20 6 H24" stroke="#fff" strokeWidth="2"/></svg>);
+    case 'eye': return (<svg {...p}><path d="M3 16 Q16 6 29 16 Q16 26 3 16 Z" fill="#fff"/><circle cx="16" cy="16" r="4" fill={stroke}/><circle cx="14" cy="14" r="1.2" fill="#fff"/></svg>);
+    case 'scope': return (<svg {...p}><path d="M5 14 L20 14 L26 18 L20 22 L5 22 Z" fill="var(--primary)"/><path d="M9 14 V22 M14 14 V22"/></svg>);
+    case 'star': return (<svg {...p}><path d="M16 4 L19 13 L29 13 L21 19 L24 28 L16 22 L8 28 L11 19 L3 13 L13 13 Z" fill="var(--gold)"/></svg>);
+    case 'home': return (<svg {...p}><path d="M5 16 L16 6 L27 16 V26 H5 Z" fill="var(--gold)"/><rect x="13" y="18" width="6" height="8"/></svg>);
+    case 'book': return (<svg {...p}><path d="M5 6 H14 Q16 6 16 8 V26 H7 Q5 26 5 24 Z M27 6 H18 Q16 6 16 8 V26 H25 Q27 26 27 24 Z" fill="var(--paper)"/></svg>);
+    case 'shop': return (<svg {...p}><path d="M6 10 L8 6 H24 L26 10 Z" fill="var(--rose)"/><rect x="6" y="10" width="20" height="16" fill="var(--paper)"/><rect x="13" y="14" width="6" height="12"/></svg>);
+  }
+};
+
+// ====================================================================
+// Customers
+// ====================================================================
+const Customer = ({kind='pip',size=140})=>{
+  const w=size,h=size*1.05,sw=2.6,stroke="#1F1A2A";
+  const c = {width:w,height:h,viewBox:"0 0 140 150",fill:"none",stroke,strokeWidth:sw,strokeLinecap:"round",strokeLinejoin:"round"};
+  if(kind==='pip') return (<svg {...c}>
+    <ellipse cx="70" cy="92" rx="44" ry="40" fill="var(--rose)"/>
+    <path d="M30 70 Q34 50 50 56" /><path d="M110 70 Q106 50 90 56"/>
+    <ellipse cx="58" cy="84" rx="6" ry="7" fill="#fff"/><circle cx="59" cy="86" r="2.5" fill={stroke}/>
+    <ellipse cx="82" cy="84" rx="6" ry="7" fill="#fff"/><circle cx="83" cy="86" r="2.5" fill={stroke}/>
+    <path d="M62 100 Q70 106 78 100"/>
+    <circle cx="48" cy="76" r="3" fill="rgba(255,200,200,.7)"/><circle cx="92" cy="76" r="3" fill="rgba(255,200,200,.7)"/>
+  </svg>);
+  if(kind==='kid') return (<svg {...c}>
+    <path d="M28 64 Q36 30 70 30 Q104 30 112 64 L112 70 H28 Z" fill="var(--primary)"/>
+    <ellipse cx="70" cy="86" rx="34" ry="36" fill="#F8D9B4"/>
+    <ellipse cx="58" cy="86" rx="3" ry="4" fill={stroke}/><ellipse cx="82" cy="86" rx="3" ry="4" fill={stroke}/>
+    <path d="M62 102 Q70 108 78 102"/>
+    <path d="M70 30 V18" /><circle cx="70" cy="14" r="4" fill="var(--gold)"/>
+    <path d="M40 130 H100" /><path d="M50 122 V140 M90 122 V140"/>
+  </svg>);
+  if(kind==='gran') return (<svg {...c}>
+    <path d="M30 100 Q30 60 70 60 Q110 60 110 100 V130 H30 Z" fill="var(--plum)"/>
+    <ellipse cx="70" cy="74" rx="28" ry="30" fill="#F5DCC4"/>
+    <circle cx="70" cy="44" r="14" fill="#E5E0D2" stroke={stroke} strokeWidth={sw}/>
+    <circle cx="60" cy="76" r="6"/><circle cx="80" cy="76" r="6"/><line x1="66" y1="76" x2="74" y2="76"/>
+    <path d="M62 90 Q70 94 78 90"/>
+    <path d="M30 100 Q50 110 70 100 Q90 110 110 100" />
+  </svg>);
+  if(kind==='moonling') return (<svg {...c}>
+    <path d="M70 18 Q104 28 104 78 Q104 122 70 130 Q98 120 98 78 Q98 28 70 18 Z" fill="var(--gold)"/>
+    <circle cx="58" cy="74" r="3" fill={stroke}/>
+    <path d="M50 92 Q60 100 72 96"/>
+    <path d="M28 30 l4 4 -4 4 -4 -4 z" fill="var(--gold)"/><path d="M114 110 l3 3 -3 3 -3 -3 z" fill="var(--gold)"/>
+  </svg>);
+  if(kind==='crunch') return (<svg {...c}>{/* tin-knight robot */}
+    <rect x="36" y="56" width="68" height="64" rx="10" fill="#C9CDD6"/>
+    <rect x="44" y="32" width="52" height="32" rx="8" fill="#E0E4EC"/>
+    <rect x="54" y="42" width="10" height="8" fill={stroke}/><rect x="76" y="42" width="10" height="8" fill={stroke}/>
+    <path d="M62 56 H78" />
+    <rect x="64" y="20" width="12" height="14" fill="#A9AEBA"/><circle cx="70" cy="18" r="4" fill="var(--rose)"/>
+    <path d="M40 76 H100 M40 92 H100"/>
+    <rect x="22" y="68" width="14" height="34" rx="4" fill="#A9AEBA"/><rect x="104" y="68" width="14" height="34" rx="4" fill="#A9AEBA"/>
+  </svg>);
+  if(kind==='twig') return (<svg {...c}>{/* sage forest creature */}
+    <ellipse cx="70" cy="96" rx="40" ry="38" fill="var(--sage)"/>
+    <path d="M50 64 Q40 40 56 36 Q60 50 60 64" fill="var(--sage)"/>
+    <path d="M90 64 Q100 40 84 36 Q80 50 80 64" fill="var(--sage)"/>
+    <ellipse cx="60" cy="92" rx="3.5" ry="4.5" fill={stroke}/><ellipse cx="80" cy="92" rx="3.5" ry="4.5" fill={stroke}/>
+    <path d="M62 106 Q70 110 78 106"/>
+    <path d="M44 80 q-6 4 -10 12 M96 80 q6 4 10 12"/>
+  </svg>);
+  if(kind==='kit') return (<svg {...c}>{/* paper-bag ghost */}
+    <path d="M40 48 Q42 38 70 36 Q98 38 100 48 L100 124 Q86 132 70 130 Q54 132 40 124 Z" fill="#F2E9D2"/>
+    <path d="M40 48 q4 -4 12 0 q4 -4 12 0 q4 -4 12 0 q4 -4 12 0 q4 -4 12 0"/>
+    <ellipse cx="60" cy="78" rx="4" ry="6" fill={stroke}/><ellipse cx="80" cy="78" rx="4" ry="6" fill={stroke}/>
+    <path d="M60 96 Q70 110 80 96"/>
+    <path d="M58 100 L58 108 M70 104 L70 114 M82 100 L82 108"/>
+  </svg>);
+  if(kind==='oma') return (<svg {...c}>{/* gran with knitting */}
+    <path d="M30 100 Q30 60 70 60 Q110 60 110 100 V130 H30 Z" fill="var(--plum)"/>
+    <ellipse cx="70" cy="74" rx="28" ry="30" fill="#F5DCC4"/>
+    <circle cx="70" cy="44" r="14" fill="#E5E0D2" stroke={stroke} strokeWidth={sw}/>
+    <circle cx="60" cy="76" r="6"/><circle cx="80" cy="76" r="6"/><line x1="66" y1="76" x2="74" y2="76"/>
+    <path d="M62 92 Q70 96 78 92"/>
+    {/* yarn ball */}
+    <circle cx="110" cy="118" r="8" fill="var(--rose)"/>
+    <path d="M104 116 q4 -4 12 4 M106 122 q4 -2 8 -2"/>
+  </svg>);
+  return (<svg {...c}>
+    <ellipse cx="70" cy="86" rx="46" ry="34" fill="var(--sage)"/>
+    <path d="M32 64 L24 38 L46 54 Z" fill="var(--sage)"/>
+    <path d="M108 64 L116 38 L94 54 Z" fill="var(--sage)"/>
+    <ellipse cx="58" cy="80" rx="3.5" ry="4" fill={stroke}/><ellipse cx="82" cy="80" rx="3.5" ry="4" fill={stroke}/>
+    <ellipse cx="70" cy="94" rx="6" ry="4" fill={stroke}/>
+    <path d="M62 102 Q70 110 78 102"/>
+  </svg>);
+};
+
+// ====================================================================
+// Contraption
+// ====================================================================
+const Contraption = ({size=120})=>{
+  const sw=2.6,stroke="#1F1A2A";
+  return (<svg width={size} height={size} viewBox="0 0 120 120" fill="none" stroke={stroke} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="20" y="70" width="80" height="34" rx="10" fill="var(--paper)"/>
+    <path d="M28 104 V114 M44 104 V114 M76 104 V114 M92 104 V114"/>
+    <circle cx="44" cy="52" r="14" fill="var(--primary)"/>
+    <circle cx="44" cy="52" r="6"/>
+    {[0,60,120,180,240,300].map(a=>{const r1=14,r2=18,r=a*Math.PI/180;return <line key={a} x1={44+Math.cos(r)*r1} y1={52+Math.sin(r)*r1} x2={44+Math.cos(r)*r2} y2={52+Math.sin(r)*r2}/>})}
+    <path d="M80 70 L82 50 L78 50 L82 30" stroke="var(--gold-deep)" strokeWidth="3"/>
+    <path d="M82 30 l-4 -4 8 0 -4 6 z" fill="var(--gold)"/>
+    <circle cx="86" cy="86" r="9" fill="var(--rose)"/>
+    <line x1="86" y1="86" x2="91" y2="81"/>
+    <path d="M62 70 V44 H78 L70 50 L78 56 H62" fill="var(--rose)"/>
+    <path d="M30 36 q6 -10 14 -4 q6 -10 14 -2"/>
+  </svg>);
+};
+
+// ====================================================================
+// Shared bits
+// ====================================================================
+const StatusBar = ()=>(
+  <div className="status">
+    <div>9:41</div>
+    <div className="right"><span>●●●●</span><span>📶</span><span>🔋</span></div>
+  </div>
+);
+
+const Tube = ({offset})=>(
+  <div className="tube" style={offset?{right:offset}:undefined}>
+    {[80,170,260,350,440,540,640,740].map(t=>(<div key={t} className="ring" style={{top:t}}/>))}
+  </div>
+);
+
+const TabBar = ({active='lab'})=>(
+  <div className="tabbar">
+    <button className={`tab ${active==='lab'?'active':''}`} aria-label="Lab"><Ic type="cog" size={26}/></button>
+    <button className={`tab ${active==='cat'?'active':''}`} aria-label="Catalogue"><Ic type="book" size={26}/></button>
+    <button className={`tab ${active==='shop'?'active':''}`} aria-label="Parts shop"><Ic type="shop" size={26}/></button>
+    <button className={`tab ${active==='daily'?'active':''}`} aria-label="Daily">★</button>
+  </div>
+);
+
+const Sfx = ({notes,show})=>show?(<>
+  {notes.map((n,i)=><div key={i} className={`sfx ${n.cls||''}`} style={{left:n.x,top:n.y,transform:`rotate(${n.r||0}deg)`}}>{n.t}</div>)}
+</>):null;
+
+// Trait fingerprint: 4 traits at 0-3 dots
+const TRAITS = [
+  {key:'fun',  glyph:'😊', label:'Fun'},
+  {key:'zappy',glyph:'⚡', label:'Zappy'},
+  {key:'cozy', glyph:'🧶', label:'Cozy'},
+  {key:'boom', glyph:'💥', label:'Boom'},
+];
+const Fingerprint = ({scores, predict, compact})=>(
+  <div className={`fingerprint ${predict?'predict':''}`}>
+    {TRAITS.map(t=>(
+      <div key={t.key} className="grp">
+        {!compact && <span className="lbl">{t.glyph}</span>}
+        {[0,1,2].map(i=><span key={i} className={`dot ${i<scores[t.key]?'on':''}`}/>)}
+      </div>
+    ))}
+  </div>
+);
+
+const Orbit = ({radius=120, parts, size=270, spin=true}) => (
+  <div className="orbit" style={{width:size,height:size}}>
+    <div className="ring"/>
+    <div className="floor"/>
+    <div className="orbit-spin" style={{animation: spin?'spin 32s linear infinite':'none'}}>
+      {parts.map((p,i)=>{
+        const a = (i/parts.length)*Math.PI*2 - Math.PI/2;
+        const x = Math.cos(a)*radius, y = Math.sin(a)*radius;
+        return (
+          <div key={i} className={`part ${p.sel?'sel':''} ${p.lock?'lock':''}`} style={{transform:`translate(${x}px,${y}px) ${p.sel?'translateZ(8px)':''}`}}>
+            <div className="upright"><Ic type={p.t} size={26}/></div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+);
+
+// ====================================================================
+// Screens
+// ====================================================================
+
+const Workshop = ({tweaks})=>(
+  <div className="phone" data-art={tweaks.art}>
+    <StatusBar/>
+    <div className="nav">
+      <div className="nav-title">
+        <div className="eyebrow">Workshop</div>
+        <h1>The Lab</h1>
+      </div>
+      <div className="row" style={{gap:8}}>
+        <div className="chip lg"><Ic type="star" size={14}/> 23</div>
+      </div>
+    </div>
+
+    <div className="content has-tabbar">
+      <Tube/>
+      <div className="card hero" style={{display:'flex',gap:14,alignItems:'center',marginRight:30,position:'relative'}}>
+        <Customer kind="pip" size={68}/>
+        <div className="grow">
+          <div className="eyebrow" style={{color:'var(--primary-deep)'}}>Pip · just arrived</div>
+          <div className="h-quote">"a chair that hugs back!"</div>
+          <div style={{marginTop:8,display:'flex',gap:6,alignItems:'center'}}>
+            <span className="eyebrow" style={{fontSize:10}}>wants</span>
+            <div className="chip" style={{padding:'4px 10px',fontSize:12}}>🧶 Cozy</div>
+            <div className="chip" style={{padding:'4px 10px',fontSize:12}}>😊 Fun</div>
+          </div>
+        </div>
+        <div className="tube-pop" style={{top:-14}}>↓</div>
+      </div>
+
+      <div className="orbit-stage">
+        <Orbit
+          parts={[
+            {t:'cog',sel:true},{t:'bolt',sel:true},{t:'bell'},
+            {t:'jelly'},{t:'sock',sel:true},{t:'spring'},
+            {t:'feather'},{t:'beaker'}
+          ]}/>
+        <div className="contraption-center"><Contraption size={120}/></div>
+        {tweaks.showSfx && <Sfx show notes={[
+          {t:'whirr…',x:140,y:120,cls:'cool',r:-6},
+          {t:'tink!',x:60,y:230,cls:'warm',r:8},
+        ]}/>}
+      </div>
+
+      <div className="row between" style={{marginRight:30}}>
+        <div className="chip lg">3 / 4 picked</div>
+        <Fingerprint predict scores={{fun:2,zappy:1,cozy:2,boom:0}}/>
+      </div>
+
+      <div className="action" style={{marginRight:30}}>
+        <div className="row">
+          <button className="btn ghost" style={{flex:1}}>↺ Shuffle</button>
+          <button className="btn primary big" style={{flex:2}}>Fire it up! ▶</button>
+        </div>
+      </div>
+    </div>
+    <TabBar active="lab"/>
+  </div>
+);
+
+const Arrival = ({tweaks})=>(
+  <div className="phone" data-art={tweaks.art}>
+    <StatusBar/>
+    <div className="nav">
+      <div className="chip dark lg">★ NEW · Bo (kid)</div>
+      <button className="icon-btn" aria-label="Skip">✕</button>
+    </div>
+    <div className="content">
+      <Tube/>
+      <div className="tube-pop" style={{animationDuration:'2.2s'}}>↓</div>
+      <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:24,marginRight:30,position:'relative'}}>
+        {tweaks.showSfx && <Sfx show notes={[
+          {t:'WHOOSH!',x:200,y:20,cls:'',r:-8},
+          {t:'*pft*',x:30,y:70,cls:'cool',r:-12},
+        ]}/>}
+        <Customer kind="kid" size={180}/>
+        <div className="bubble" style={{maxWidth:280}}>"my goldfish is bored. fix him?"</div>
+        <div className="row" style={{gap:8,flexWrap:'wrap',justifyContent:'center'}}>
+          <span className="eyebrow" style={{alignSelf:'center'}}>wants</span>
+          <div className="chip lg" style={{background:'var(--gold)'}}>😊 Fun</div>
+          <div className="chip lg" style={{background:'var(--gold)'}}>⚡ Zappy</div>
+        </div>
+      </div>
+      <div className="action" style={{marginRight:30}}>
+        <button className="btn primary big">OK, let's build! ➜</button>
+      </div>
+    </div>
+  </div>
+);
+
+const Build = ({tweaks})=>(
+  <div className="phone" data-art={tweaks.art}>
+    <StatusBar/>
+    <div className="nav">
+      <div className="nav-title">
+        <div className="eyebrow">Step 2 · Pick parts</div>
+        <h1>Spin & Pick</h1>
+      </div>
+      <div className="chip gold lg">2 / 4</div>
+    </div>
+    <div className="content">
+      <div className="orbit-stage" style={{flex:1}}>
+        <Orbit size={300} radius={138}
+          parts={[
+            {t:'cog',sel:true},{t:'spring'},{t:'bell'},
+            {t:'jelly'},{t:'bolt',sel:true},{t:'sock'},
+            {t:'beaker'},{t:'feather'},{t:'cloud'},
+            {t:'magnet',lock:true},{t:'eye',lock:true},{t:'scope',lock:true}
+          ]}/>
+        <div className="contraption-center"><Contraption size={130}/></div>
+        {tweaks.showSfx && <Sfx show notes={[
+          {t:'click',x:30,y:80,cls:'cool'},
+          {t:'spin →',x:240,y:50,cls:'warm'},
+        ]}/>}
+      </div>
+
+      <div className="card">
+        <div className="row between" style={{marginBottom:10}}>
+          <div className="eyebrow">Your build · predicting</div>
+          <Fingerprint predict scores={{fun:1,zappy:2,cozy:0,boom:1}}/>
+        </div>
+        <div className="row" style={{gap:8,flexWrap:'wrap'}}>
+          <div className="chip gold lg"><Ic type="cog" size={14}/> Cog</div>
+          <div className="chip gold lg"><Ic type="bolt" size={14}/> Bolt</div>
+          <div className="chip lg" style={{borderStyle:'dashed',color:'var(--ink-soft)'}}>+ add</div>
+          <div className="chip lg" style={{borderStyle:'dashed',color:'var(--ink-soft)'}}>+ add</div>
+        </div>
+      </div>
+
+      <div className="action">
+        <div className="row">
+          <button className="btn ghost" style={{flex:1}}>Reset</button>
+          <button className="btn primary big" style={{flex:2}}>Build! ▶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const Test = ({tweaks})=>{
+  const big = tweaks.explosion === 'big';
+  return (
+    <div className="phone" data-art={tweaks.art}>
+      <StatusBar/>
+      <div className="nav">
+        <div className="chip dark lg">★ TEST CHAMBER</div>
+        <div className="chip lg">⏵ 1×</div>
+      </div>
+      <div className={`content ${big && !tweaks.reducedMotion?'shake':''}`} style={{background:'radial-gradient(circle at 50% 35%, rgba(255,201,60,.30), transparent 60%)'}}>
+        <div className="card" style={{flex:1,position:'relative',overflow:'hidden',background:'linear-gradient(180deg, var(--paper) 0%, var(--bg-2) 100%)',padding:0}}>
+          <div className="eyebrow" style={{position:'absolute',top:14,left:18,zIndex:2}}>Glass dome chamber</div>
+          <svg viewBox="0 0 300 280" preserveAspectRatio="none" style={{position:'absolute',inset:0,width:'100%',height:'100%',pointerEvents:'none'}}>
+            <path d="M30 250 Q30 60 150 60 Q270 60 270 250" fill="rgba(60,196,218,0.12)" stroke="var(--ink)" strokeWidth="2.5" strokeDasharray="5 5"/>
+          </svg>
+          <div style={{position:'absolute',left:30,bottom:24}}><Customer kind="pip" size={92}/></div>
+          <div style={{position:'absolute',right:30,bottom:24}}><Contraption size={130}/></div>
+          {!tweaks.reducedMotion && <div className="boom">
+            {Array.from({length: big?22:8}).map((_,i)=>{
+              const ang = (i*360/22)*Math.PI/180;
+              const dx = Math.cos(ang)*(big?160:80);
+              const dy = Math.sin(ang)*(big?160:80);
+              return <span key={i} className="spark" style={{left:'50%',top:'42%','--dx':dx+'px','--dy':dy+'px',background: i%3?'var(--gold)':'var(--rose)',animationDelay:(i*0.03)+'s'}}/>;
+            })}
+          </div>}
+          {tweaks.showSfx && <Sfx show notes={[
+            {t:'KA-THUNK!',x:80,y:30,cls:'',r:-6},
+            {t:'sproing!',x:200,y:90,cls:'warm',r:8},
+            {t:'*ping ping*',x:30,y:140,cls:'cool',r:-4},
+          ]}/>}
+        </div>
+
+        <div className="card">
+          <div className="row between" style={{marginBottom:10}}>
+            <div className="eyebrow">Sensors are watching…</div>
+            <div className="script" style={{fontSize:18}}>traits firing live</div>
+          </div>
+          <div className="judge">
+            <div className="judge-cell on">
+              <div className="glyph">😊</div>Fun
+              <div className="dots"><span className="on"/><span className="on"/><span/></div>
+            </div>
+            <div className="judge-cell on">
+              <div className="glyph">⚡</div>Zappy
+              <div className="dots"><span className="on"/><span/><span/></div>
+            </div>
+            <div className="judge-cell">
+              <div className="glyph">🧶</div>Cozy
+              <div className="dots"><span/><span/><span/></div>
+            </div>
+            <div className="judge-cell on">
+              <div className="glyph">💥</div>Boom
+              <div className="dots"><span className="on"/><span className="on"/><span className="on"/></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="action">
+          <div className="row between">
+            <div className="chip lg" style={{background:'var(--ink)',color:'var(--gold)'}}>▮▮▮▮▯</div>
+            <button className="btn ghost">↺ replay</button>
+            <button className="btn">skip ➜</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Reaction = ({tweaks})=>(
+  <div className="phone" data-art={tweaks.art}>
+    <StatusBar/>
+    <div className="nav">
+      <div className="nav-title">
+        <div className="eyebrow">Pip's reaction</div>
+        <h1>Delight!</h1>
+      </div>
+      <div className="chip gold lg">★ all 4 high</div>
+    </div>
+    <div className="content">
+      <Tube/>
+      <div className="card hero" style={{display:'flex',gap:14,alignItems:'center',marginRight:30,position:'relative'}}>
+        <Customer kind="pip" size={92}/>
+        <div className="grow">
+          <div className="eyebrow" style={{color:'var(--primary-deep)'}}>★ DELIGHT</div>
+          <div className="h-quote">"this hugs harder than my granny!"</div>
+        </div>
+        {tweaks.showSfx && <Sfx show notes={[{t:'cheer!',x:120,y:-4,cls:'warm',r:-6}]}/>}
+      </div>
+
+      <div className="card gold" style={{marginRight:30,display:'flex',gap:14,alignItems:'center',position:'relative'}}>
+        <div style={{width:64,height:64,background:'var(--paper)',border:'2.5px solid var(--line)',borderRadius:18,display:'flex',alignItems:'center',justifyContent:'center'}}>
+          <Ic type="magnet" size={34}/>
+        </div>
+        <div className="grow">
+          <div className="eyebrow">+1 part unlocked</div>
+          <div className="h-quote" style={{fontSize:18}}>Magnet Glove</div>
+          <div className="script" style={{color:'var(--ink-soft)',fontSize:15,marginTop:2}}>(Sir Crunch's first delight)</div>
+        </div>
+        <div className="tube-pop" style={{position:'absolute',right:14,top:-10,animationDuration:'2.6s'}}>↓</div>
+      </div>
+
+      <div className="card" style={{marginRight:30}}>
+        <div className="row between" style={{marginBottom:10}}>
+          <div className="eyebrow">Catalogue · entry #24</div>
+          <Ic type="star" size={22}/>
+        </div>
+        <div className="row" style={{gap:12,alignItems:'center'}}>
+          <div className="placeholder" style={{width:56,height:56}}>thumb</div>
+          <div className="grow" style={{minWidth:0}}>
+            <div style={{fontFamily:'Fraunces',fontWeight:800,fontSize:17,letterSpacing:'-0.01em'}}>"Hugging Chair v.1"</div>
+            <div className="script" style={{color:'var(--ink-soft)',fontSize:16,marginTop:1}}>cog · bell · bolt · sock</div>
+          </div>
+        </div>
+        <div style={{marginTop:10,display:'flex',justifyContent:'flex-start'}}>
+          <Fingerprint scores={{fun:3,zappy:2,cozy:3,boom:1}}/>
+        </div>
+      </div>
+
+      <div className="action" style={{marginRight:30}}>
+        <div className="row">
+          <button className="btn ghost" style={{flex:1}}>Share</button>
+          <button className="btn primary big" style={{flex:2}}>Next ➜</button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const Flipbook = ({tweaks})=>(
+  <div className="phone" data-art={tweaks.art}>
+    <StatusBar/>
+    <div className="nav">
+      <div className="nav-title">
+        <div className="eyebrow">Your collection</div>
+        <h1>Flipbook</h1>
+      </div>
+      <div className="chip lg">23 / 80</div>
+    </div>
+    <div className="content has-tabbar">
+      <div className="row" style={{gap:8,flexWrap:'wrap'}}>
+        <div className="chip gold lg">All</div>
+        <div className="chip lg">Rare ★</div>
+        <div className="chip lg">By customer</div>
+      </div>
+      <div className="book">
+        <div className="page left">
+          <div className="placeholder" style={{flex:1}}>painted invention</div>
+          <div style={{fontFamily:'Fraunces',fontWeight:800,fontSize:18}}>"Hugging Chair"</div>
+          <div className="script" style={{color:'var(--ink-soft)',fontSize:16}}>for Pip · Apr 28</div>
+          <Fingerprint scores={{fun:3,zappy:2,cozy:3,boom:1}}/>
+          <div className="row" style={{gap:8}}>
+            <Ic type="cog" size={22}/><Ic type="bell" size={22}/><Ic type="bolt" size={22}/>
+          </div>
+        </div>
+        <div className="page right" style={{background:'linear-gradient(180deg,var(--paper) 70%,var(--gold) 100%)'}}>
+          <div className="placeholder" style={{flex:1}}>test result</div>
+          <div className="row between"><div style={{fontFamily:'Fraunces',fontWeight:800,fontSize:18}}>"Silent Dog"</div><Ic type="star" size={24}/></div>
+          <div className="script" style={{color:'var(--ink-soft)',fontSize:16}}>for Rufus · May 1 · ★ delight</div>
+          <Fingerprint scores={{fun:2,zappy:1,cozy:3,boom:0}}/>
+          <div className="row" style={{gap:8}}>
+            <Ic type="sock" size={22}/><Ic type="bell" size={22}/><Ic type="cog" size={22}/><Ic type="bolt" size={22}/>
+          </div>
+        </div>
+      </div>
+      <div className="row" style={{justifyContent:'center',gap:12}}>
+        <button className="icon-btn" aria-label="Previous">◀</button>
+        <div className="chip gold lg">page 12 / 40</div>
+        <button className="icon-btn" aria-label="Next">▶</button>
+      </div>
+    </div>
+    <TabBar active="cat"/>
+  </div>
+);
+
+const Daily = ({tweaks})=>(
+  <div className="phone" data-art={tweaks.art}>
+    <StatusBar/>
+    <div className="nav">
+      <div className="chip dark lg">★ DAY 1 of 7 · Moonling Week</div>
+      <div className="chip gold lg">⏰ 6h 12m</div>
+    </div>
+    <div className="content has-tabbar" style={{background:'radial-gradient(circle at 50% 30%, rgba(255,201,60,0.22), transparent 60%)'}}>
+      <Tube/>
+      <div className="daily-card" style={{marginRight:30,minHeight:148,paddingBottom:20}}>
+        <div className="spark-bg">
+          {[...Array(10)].map((_,i)=>(<span key={i} style={{left:(10+i*9)+'%',top:(20+(i*7)%60)+'%',animationDelay:(i*.2)+'s'}}/>))}
+        </div>
+        <div style={{position:'relative',display:'flex',alignItems:'center',gap:14}}>
+          <Customer kind="moonling" size={120}/>
+          <div className="grow">
+            <div className="eyebrow">This week's visitor</div>
+            <div style={{fontFamily:'Fraunces',fontWeight:900,fontSize:28,lineHeight:1,letterSpacing:'-0.02em'}}>Moonling</div>
+            <div className="script" style={{color:'var(--gold)',fontSize:20,marginTop:2}}>visits each evening</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bubble" style={{marginRight:30}}>"send me home before sundown, please"</div>
+
+      <div className="card" style={{marginRight:30}}>
+        <div className="eyebrow" style={{marginBottom:8}}>Week progress</div>
+        <div className="row" style={{gap:6,justifyContent:'space-between'}}>
+          {['M','T','W','T','F','S','S'].map((d,i)=>(
+            <div key={i} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
+              <div style={{
+                width:36,height:36,borderRadius:'50%',
+                border:'2.5px solid var(--line)',
+                background: i===0?'var(--gold)': i<0?'var(--paper)':'var(--paper-deep)',
+                display:'flex',alignItems:'center',justifyContent:'center',
+                fontFamily:'Fraunces',fontWeight:900,fontSize:14,
+                opacity: i===0?1:0.55
+              }}>{i===0?'1':'·'}</div>
+              <div className="eyebrow" style={{fontSize:9,opacity:i===0?1:0.45}}>{d}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="card gold" style={{marginRight:30}}>
+        <div className="eyebrow" style={{marginBottom:8}}>Today's reward</div>
+        <ul style={{margin:0,padding:0,listStyle:'none',display:'flex',flexDirection:'column',gap:6,fontSize:15,fontWeight:800}}>
+          <li>★  Glow-in-dark flipbook page</li>
+          <li>🌙 Day 7: legendary Moonling part</li>
+        </ul>
+      </div>
+
+      <div style={{flex:1}}/>
+      <div className="action" style={{marginRight:30}}>
+        <button className="btn primary big">Help Moonling ➜</button>
+      </div>
+    </div>
+    <TabBar active="daily"/>
+  </div>
+);
+
+// ====================================================================
+const SCREENS = [
+  {key:'workshop',num:'C1', label:'Workshop · main loop', Cmp: Workshop},
+  {key:'arrival', num:'C2', label:'Customer arrival',     Cmp: Arrival},
+  {key:'build',   num:'C3', label:'Build · pick parts',   Cmp: Build},
+  {key:'test',    num:'C4', label:'Test reveal',          Cmp: Test},
+  {key:'react',   num:'C5', label:'Reaction + unlock',    Cmp: Reaction},
+  {key:'cat',     num:'C6', label:'Catalogue / Flipbook', Cmp: Flipbook},
+  {key:'daily',   num:'C7', label:'Daily special',        Cmp: Daily},
+];
+
+function App(){
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  return (
+    <div className={tweaks.reducedMotion?'reduced-motion':''}>
+      <div className="title-strip">
+        <div>
+          <div className="sub">Direction C · Pneumatic Tube</div>
+          Mad Inventor Lab · hi-fi
+        </div>
+        <div className="sub right-sub">7 screens · ages 6–9<br/>iOS HIG · 56pt+ targets</div>
+      </div>
+      <div className="app-bg">
+        {SCREENS.map(({key,num,label,Cmp})=>(
+          <div key={key} className="frame-wrap" data-screen-label={`${num} ${label}`}>
+            <Cmp tweaks={tweaks}/>
+            <div className="cap"><span className="num">{num}</span>{label}</div>
+          </div>
+        ))}
+      </div>
+      <TweaksPanel title="Tweaks">
+        <TweakSection title="Art direction">
+          <TweakRadio
+            value={tweaks.art}
+            onChange={v=>setTweak('art',v)}
+            options={[
+              {value:'watercolor',label:'Watercolor'},
+              {value:'ink',label:'Ink'},
+              {value:'cel',label:'Cel'},
+            ]}/>
+        </TweakSection>
+        <TweakSection title="Test moment">
+          <TweakRadio
+            value={tweaks.explosion}
+            onChange={v=>setTweak('explosion',v)}
+            options={[
+              {value:'big',label:'Big & explosive'},
+              {value:'small',label:'Quiet'},
+            ]}/>
+        </TweakSection>
+        <TweakSection title="Sound notes">
+          <TweakToggle value={tweaks.showSfx} onChange={v=>setTweak('showSfx',v)} label="Show SFX notes"/>
+        </TweakSection>
+        <TweakSection title="Accessibility">
+          <TweakToggle value={tweaks.reducedMotion} onChange={v=>setTweak('reducedMotion',v)} label="Reduced motion"/>
+        </TweakSection>
+      </TweaksPanel>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
