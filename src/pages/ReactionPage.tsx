@@ -26,15 +26,20 @@ import { Customer as CustomerSvg } from '../components/customer/Customer';
  *          German auto-name.
  *       2) `addCatalogueEntry(entry)` (idempotent).
  *       3) If an unlock fires, `unlockPart(partId)`.
- *       4) `endRound()`.
- *       5) Navigate to '/'.
+ *       4) If the customer was Moonling (the M17 themed-week visitor),
+ *          mark today's daily reward as claimed via `claimDailyReward(dayInWeek)`.
+ *          The reducer is idempotent on the same dayInWeek so a stray
+ *          double-fire is harmless.
+ *       5) `endRound()`.
+ *       6) Navigate to '/'.
  *
  * Unlock detection: the new part must (a) have an `unlock` field whose
  * `customerId` matches the current customer + whose `tier` matches the
- * resolved tier, and (b) not already be in `state.unlockedPartIds`. Only
- * Sir Knirps's first delight (magnet) and Bo's first delight (scope) can
- * fire in Phase 1. Kit isn't in the Phase-1 customer roster, so eye stays
- * locked. Pip has no unlock at all.
+ * resolved tier, and (b) not already be in `state.unlockedPartIds`. The
+ * existing detector already handles Moonling's `moonbeam` because parts.ts
+ * carries `unlock: { customerId: 'moonling', tier: 'delight' }` and
+ * customer lookup falls through to DAILY_VISITORS for visitors not in
+ * CUSTOMERS. M17 wires the lookup fallback below.
  */
 export interface ReactionPageProps {
   game: GameStateApi;
@@ -94,7 +99,12 @@ function mintEntryId(): string {
 
 export function ReactionPage({ game, round }: ReactionPageProps) {
   const navigate = useNavigate();
-  const { state: gameState, addCatalogueEntry, unlockPart } = game;
+  const {
+    state: gameState,
+    addCatalogueEntry,
+    unlockPart,
+    claimDailyReward,
+  } = game;
   const { state: roundState, endRound } = round;
 
   // Defensive redirect: only the `reaction` phase should land here.
@@ -152,6 +162,14 @@ export function ReactionPage({ game, round }: ReactionPageProps) {
     addCatalogueEntry(entry);
     if (unlockingPart) {
       unlockPart(unlockingPart.id);
+    }
+    // M17: a Moonling round resolves today's Daily Special. Mark the reward
+    // as claimed so the player can not double-claim by replaying a round on
+    // the same day. The reducer is idempotent on dayInWeek so calling this
+    // when the day was already claimed (e.g. via the Daily page's own claim
+    // button on Day 1-6) is a safe no-op.
+    if (customer.id === 'moonling') {
+      claimDailyReward(gameState.dailyWeek.dayInWeek);
     }
     endRound();
     navigate('/');

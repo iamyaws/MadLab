@@ -7,6 +7,7 @@ import { PARTS } from '../data/parts';
 import { compose, sumTraits } from '../lib/composition';
 import { CustomerHeroCard } from '../components/ui/CustomerHeroCard';
 import { Fingerprint } from '../components/ui/Fingerprint';
+import { TabBar } from '../components/ui/TabBar';
 import { PixiRoot } from '../pixi/PixiRoot';
 import { OrbitStage } from '../pixi/OrbitStage';
 
@@ -169,24 +170,7 @@ export function WorkshopPage({ game, round }: WorkshopPageProps) {
         </div>
       </div>
 
-      {/* Phase-1 placeholder tab bar. Static; non-functional. M10 / Phase 2 wire it. */}
-      <nav
-        aria-label="Tab-Leiste (Vorschau)"
-        className="absolute left-[18px] right-[18px] bottom-[18px] h-[72px] bg-paper border-[2.5px] border-ink rounded-[30px] flex items-center justify-around shadow-[0_8px_0_rgba(31,26,42,0.10)] px-2"
-      >
-        <div className="w-[54px] h-[54px] rounded-2xl bg-gold flex items-center justify-center font-black text-[20px] text-ink shadow-[inset_0_-4px_0_rgba(0,0,0,0.18)]">
-          Lab
-        </div>
-        <div className="w-[54px] h-[54px] rounded-2xl flex items-center justify-center font-black text-[16px] text-ink-soft">
-          Buch
-        </div>
-        <div className="w-[54px] h-[54px] rounded-2xl flex items-center justify-center font-black text-[16px] text-ink-soft">
-          Laden
-        </div>
-        <div className="w-[54px] h-[54px] rounded-2xl flex items-center justify-center font-black text-[20px] text-ink-soft">
-          {'★'}
-        </div>
-      </nav>
+      <TabBar active="lab" />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import type { GameStateApi } from '../hooks/useGameState';
 import { getCustomerById } from '../data/customers';
 import { Fingerprint } from '../components/ui/Fingerprint';
 import { PartIcon } from '../components/ui/PartIcon';
+import { TabBar } from '../components/ui/TabBar';
 
 /**
  * CataloguePage (C6, route '/catalogue'). Phase-1 stub: a simple grid of
@@ -106,24 +107,7 @@ export function CataloguePage({ game }: CataloguePageProps) {
         )}
       </div>
 
-      {/* Static placeholder tab bar matching WorkshopPage. */}
-      <nav
-        aria-label="Tab-Leiste (Vorschau)"
-        className="absolute left-[18px] right-[18px] bottom-[18px] h-[72px] bg-paper border-[2.5px] border-ink rounded-[30px] flex items-center justify-around shadow-[0_8px_0_rgba(31,26,42,0.10)] px-2"
-      >
-        <div className="w-[54px] h-[54px] rounded-2xl flex items-center justify-center font-black text-[16px] text-ink-soft">
-          Lab
-        </div>
-        <div className="w-[54px] h-[54px] rounded-2xl bg-gold flex items-center justify-center font-black text-[18px] text-ink shadow-[inset_0_-4px_0_rgba(0,0,0,0.18)]">
-          Buch
-        </div>
-        <div className="w-[54px] h-[54px] rounded-2xl flex items-center justify-center font-black text-[16px] text-ink-soft">
-          Laden
-        </div>
-        <div className="w-[54px] h-[54px] rounded-2xl flex items-center justify-center font-black text-[20px] text-ink-soft">
-          {'★'}
-        </div>
-      </nav>
+      <TabBar active="buch" />
     </div>
   );
 }

@@ -4,20 +4,25 @@ import type { Customer } from '../lib/types';
  * The 7 daily-special visitors. Each anchors a 7-day themed week; the order
  * below is the rotation order consumed by `lib/dailyRotation.ts` (M6).
  *
- * Phase 1 does not render these. The list is needed now so the rotation
- * logic can be tested before Phase 2 builds the Daily Special screen.
+ * Daily visitors share the `Customer` shape. Moonling (the M17 themed week)
+ * has its full `wants` + `forbidden` fingerprint populated so the round
+ * resolves cleanly when the player taps "Mondling helfen". The other six
+ * keep `[]` placeholders for now; their themed weeks ship in Phase 3+ and
+ * will tune their fingerprints alongside their reward ladders.
  *
- * Daily visitors share the `Customer` shape but their `wants` and
- * `forbidden` fingerprints are tuned in Phase 2 once the themed-week reward
- * arcs are designed; `[]` for Phase 1.
+ * Moonling design: cozy + fun reads as gentle, sleepy, "let the sun set
+ * softly". Forbidding `boom` means explosive contraptions wake him up and
+ * fail the round. With these wants the satisfaction tier resolves through
+ * the standard `resolveTier` rules, so Day 7's Moonbeam unlock fires when
+ * the player builds a cozy + fun contraption with no boom-leaning parts.
  */
 export const DAILY_VISITORS: Customer[] = [
   {
     id: 'moonling',
     nameDe: 'Mondling',
     requestDe: 'bring mich heim, bevor die Sonne untergeht',
-    wants: [],
-    forbidden: [],
+    wants: ['cozy', 'fun'],
+    forbidden: ['boom'],
     visualKind: 'moonling',
   },
   {

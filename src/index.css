@@ -55,3 +55,24 @@
     opacity: 0;
   }
 }
+
+/*
+ * mil-sparkle-twinkle. The Daily page's hero-card aura (M17). Ten gold
+ * dots layered behind the Moonling portrait pulse opacity + scale on
+ * staggered delays for the "you are blessed by the Moon" feel. The
+ * reduced-motion media query above collapses the duration to ~0, but
+ * DailyPage also gates the entire `<SparkleAura />` component behind
+ * `useReducedMotion()` so users who prefer reduced motion never even
+ * mount the aura.
+ */
+@keyframes mil-sparkle-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}

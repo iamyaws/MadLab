@@ -9,6 +9,7 @@ import { BuildPage } from './pages/BuildPage';
 import { TestPage } from './pages/TestPage';
 import { ReactionPage } from './pages/ReactionPage';
 import { CataloguePage } from './pages/CataloguePage';
+import { DailyPage } from './pages/DailyPage';
 
 /**
  * AppRoutes. The five Phase-1 routes plus the catalogue stub, wrapped in
@@ -55,6 +56,7 @@ export function AppRoutes({ game, round }: AppRoutesProps) {
               element={<ReactionPage game={game} round={round} />}
             />
             <Route path="/catalogue" element={<CataloguePage game={game} />} />
+            <Route path="/daily" element={<DailyPage game={game} round={round} />} />
           </Routes>
         </motion.div>
       </AnimatePresence>

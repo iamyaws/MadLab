@@ -1,4 +1,5 @@
 import type { Customer } from '../lib/types';
+import { DAILY_VISITORS } from './dailyRoster';
 
 /**
  * The 6 regular customers who anchor the core arrival rotation.
@@ -71,10 +72,20 @@ export const CUSTOMERS: Customer[] = [
 export const REGULAR_CUSTOMER_IDS: string[] = CUSTOMERS.map((c) => c.id);
 
 /**
- * Lookup helper. Returns undefined when the id is unknown so callers can
- * decide how to handle a missing customer (typically a fresh save where the
- * id was persisted before the customer was removed).
+ * Lookup helper. Searches the regular roster first, then the daily-visitor
+ * roster, so callers handling round-flow customers (regular or daily) get
+ * the right `Customer` record without branching on the source. Returns
+ * undefined when the id is unknown so callers can decide how to handle a
+ * missing customer (typically a fresh save where the id was persisted
+ * before the customer was removed).
+ *
+ * M17 wired the daily-visitor fallback for the Moonling Week round flow:
+ * once `startArrival('moonling')` runs, every downstream page (Arrival,
+ * Workshop, Reaction) needs to resolve the moonling Customer record for
+ * the portrait + request quote + reaction logic.
  */
 export function getCustomerById(id: string): Customer | undefined {
-  return CUSTOMERS.find((c) => c.id === id);
+  return (
+    CUSTOMERS.find((c) => c.id === id) ?? DAILY_VISITORS.find((c) => c.id === id)
+  );
 }

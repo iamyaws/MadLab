@@ -5,6 +5,7 @@ import {
   pickReactionQuote,
 } from '../reactionQuotes';
 import { CUSTOMERS, REGULAR_CUSTOMER_IDS } from '../customers';
+import { DAILY_VISITORS } from '../dailyRoster';
 import type { Tier } from '../../lib/types';
 
 const TIERS: Tier[] = ['delight', 'satisfied', 'sortOf', 'fail'];
@@ -36,12 +37,19 @@ describe('REACTION_QUOTES', () => {
     }
   });
 
-  it('has all customer-id keys also present in CUSTOMERS', () => {
-    const valid = new Set(CUSTOMERS.map((c) => c.id));
+  it('has all customer-id keys also present in CUSTOMERS or DAILY_VISITORS', () => {
+    // M17 added a moonling entry for the first themed daily-visitor week.
+    // Future themed weeks (hooks, tinker, beep, snorri, whisp, doc) will add
+    // more daily-visitor keys; the assertion accepts both rosters.
+    const valid = new Set([
+      ...CUSTOMERS.map((c) => c.id),
+      ...DAILY_VISITORS.map((c) => c.id),
+    ]);
     for (const id of Object.keys(REACTION_QUOTES)) {
-      expect(valid.has(id), `key "${id}" must match a CUSTOMERS entry`).toBe(
-        true,
-      );
+      expect(
+        valid.has(id),
+        `key "${id}" must match a CUSTOMERS or DAILY_VISITORS entry`,
+      ).toBe(true);
     }
   });
 
@@ -108,8 +116,19 @@ describe('pickReactionQuote', () => {
     expect(pickReactionQuote('unknown', 'delight', 0)).toBe(
       DEFAULT_REACTION_QUOTES.delight[0],
     );
-    expect(pickReactionQuote('moonling', 'fail', 0)).toBe(
+    // M17 wired moonling-specific quotes; the fallback now applies only to
+    // the un-arted daily visitors (hooks, tinker, beep, snorri, whisp, doc).
+    expect(pickReactionQuote('hooks', 'fail', 0)).toBe(
       DEFAULT_REACTION_QUOTES.fail[0],
+    );
+  });
+
+  it('returns a moonling-specific quote when the customer id is moonling', () => {
+    expect(pickReactionQuote('moonling', 'delight', 0)).toBe(
+      REACTION_QUOTES.moonling.delight[0],
+    );
+    expect(pickReactionQuote('moonling', 'fail', 0)).toBe(
+      REACTION_QUOTES.moonling.fail[0],
     );
   });
 

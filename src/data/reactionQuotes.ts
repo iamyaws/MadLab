@@ -12,9 +12,13 @@ import type { Tier } from '../lib/types';
 export type ReactionQuoteSet = Record<Tier, string[]>;
 
 /**
- * Reaction quotes for the 6 regular customers. Daily-special visitors and
- * any not-yet-named id fall back to `DEFAULT_REACTION_QUOTES`. M17 will fill
- * in entries for the 7 daily visitors as their themed weeks ship.
+ * Reaction quotes for the 6 regular customers plus Moonling (the M17 themed
+ * week). Daily-special visitors without explicit entries fall back to
+ * `DEFAULT_REACTION_QUOTES`; future themed weeks (hooks, tinker, beep,
+ * snorri, whisp, doc) will fill in their own entries as they ship.
+ *
+ * Moonling voice: dreamy, sleepy, gentle. Delight = ahh-the-moon-is-here;
+ * fail = AH-too-loud (he reacts strongly to `boom`-forbidden contraptions).
  */
 export const REACTION_QUOTES: Record<string, ReactionQuoteSet> = {
   pip: {
@@ -147,6 +151,28 @@ export const REACTION_QUOTES: Record<string, ReactionQuoteSet> = {
       'die Katze schaut nur böse.',
       'miau, langweilig.',
       'nichts passiert.',
+    ],
+  },
+  moonling: {
+    delight: [
+      'ahhh, ich seh schon den Mond.',
+      'wie eine sanfte Wolke.',
+      'schlaaaf gut.',
+    ],
+    satisfied: [
+      'danke, das tut gut.',
+      'sanft.',
+      'passt zum Mondaufgang.',
+    ],
+    sortOf: [
+      'hmm, fast wie ein Traum.',
+      'naja, fast.',
+      'ein bisschen mondig.',
+    ],
+    fail: [
+      'AH! viel zu laut für die Nacht!',
+      'das weckt jeden Mond auf.',
+      'neeein, kein Krach!',
     ],
   },
 };
