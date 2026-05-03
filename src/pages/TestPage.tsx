@@ -4,6 +4,7 @@ import type { RoundFlowApi } from '../hooks/useRoundFlow';
 import { getCustomerById } from '../data/customers';
 import type { Trait, TraitScores } from '../lib/types';
 import { SensorGrid } from '../components/ui/SensorGrid';
+import { Customer as CustomerSvg } from '../components/customer/Customer';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
 /**
@@ -172,8 +173,12 @@ export function TestPage({ round }: TestPageProps) {
           </div>
           {/* Customer left, contraption right. */}
           {customer ? (
-            <div className="absolute left-6 bottom-4 w-20 h-20 flex items-center justify-center rounded-full border-[2.5px] border-ink bg-rose text-paper font-display font-black text-[36px] shadow-[0_4px_0_rgba(31,26,42,0.18)]">
-              {customer.nameDe.charAt(0).toUpperCase()}
+            <div className="absolute left-6 bottom-4">
+              <CustomerSvg
+                kind={customer.visualKind}
+                size={80}
+                ariaLabel={`Portrait von ${customer.nameDe}`}
+              />
             </div>
           ) : null}
           <div className="absolute right-6 bottom-4 w-24 h-24 rounded-2xl border-[2.5px] border-ink bg-primary shadow-[0_4px_0_rgba(31,26,42,0.18)]" />

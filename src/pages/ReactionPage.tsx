@@ -8,6 +8,7 @@ import { pickReactionQuote } from '../data/reactionQuotes';
 import type { CatalogueEntry, Customer, Tier } from '../lib/types';
 import { Fingerprint } from '../components/ui/Fingerprint';
 import { PartChip } from '../components/ui/PartChip';
+import { Customer as CustomerSvg } from '../components/customer/Customer';
 
 /**
  * ReactionPage (C5, route '/reaction'). Reaction tier in big Fraunces type,
@@ -259,14 +260,14 @@ function CustomerHeroCardInline({
   customer: Customer;
   reactionQuote: string;
 }) {
-  const initial = customer.nameDe.charAt(0).toUpperCase();
   return (
     <>
-      <div
-        aria-label={`Portrait von ${customer.nameDe}`}
-        className="flex items-center justify-center w-[92px] h-[92px] rounded-full border-[2.5px] border-ink bg-rose text-paper font-display font-black text-[40px] leading-none shadow-[0_4px_0_rgba(31,26,42,0.18)] flex-shrink-0"
-      >
-        {initial}
+      <div className="flex-shrink-0">
+        <CustomerSvg
+          kind={customer.visualKind}
+          size={92}
+          ariaLabel={`Portrait von ${customer.nameDe}`}
+        />
       </div>
       <div className="flex-1 min-w-0">
         <div className="font-body font-extrabold text-[11px] uppercase tracking-widest text-primary-deep">

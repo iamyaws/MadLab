@@ -3,8 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import type { RoundFlowApi } from '../hooks/useRoundFlow';
 import { getCustomerById } from '../data/customers';
-import { CustomerHeroCard } from '../components/ui/CustomerHeroCard';
+import { Customer as CustomerSvg } from '../components/customer/Customer';
+import type { Trait } from '../lib/types';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+
+const TRAIT_GLYPH: Record<Trait, string> = {
+  fun: '😊',
+  zappy: '⚡',
+  cozy: '🧶',
+  boom: '💥',
+};
+
+const TRAIT_LABEL_DE: Record<Trait, string> = {
+  fun: 'Spaß',
+  zappy: 'Zapp',
+  cozy: 'Kuschel',
+  boom: 'Bumm',
+};
 
 /**
  * ArrivalPage (C2, route '/arrival'). The "customer just dropped through the
@@ -80,7 +95,33 @@ export function ArrivalPage({ round }: ArrivalPageProps) {
             transition={transition}
             className="flex flex-col items-center gap-5"
           >
-            <CustomerHeroCard customer={customer} size="lg" />
+            <CustomerSvg
+              kind={customer.visualKind}
+              size={180}
+              ariaLabel={`Portrait von ${customer.nameDe}`}
+            />
+            <div
+              className="relative bg-paper border-[2.5px] border-ink rounded-3xl px-5 py-3.5 max-w-[280px] font-display font-extrabold text-[19px] leading-tight text-center"
+              role="note"
+            >
+              <span aria-hidden="true">"</span>
+              {customer.requestDe}
+              <span aria-hidden="true">"</span>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap justify-center">
+              <span className="font-body font-extrabold text-[11px] uppercase tracking-widest text-ink-soft">
+                möchte
+              </span>
+              {customer.wants.map((trait) => (
+                <span
+                  key={trait}
+                  className="inline-flex items-center gap-1.5 border-2 border-ink rounded-full bg-gold px-3.5 py-1.5 text-[14px] font-extrabold"
+                >
+                  <span aria-hidden="true">{TRAIT_GLYPH[trait]}</span>
+                  {TRAIT_LABEL_DE[trait]}
+                </span>
+              ))}
+            </div>
           </motion.div>
         ) : (
           <p className="font-display font-extrabold text-ink-soft">
