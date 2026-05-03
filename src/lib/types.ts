@@ -126,9 +126,9 @@ export interface CatalogueEntry extends Invention {
 }
 
 /**
- * The schema-versioned localStorage save shape. Stored under one key
- * (`mil:save:v1`). `migrate()` in `lib/storage.ts` is the only path that
- * reads anything else.
+ * The Phase 1 save shape. Retained as the migration source for v2; new
+ * code should use `SaveState` (alias of the latest version) and let
+ * `migrate()` in `lib/storage.ts` lift older blobs forward.
  */
 export interface SaveStateV1 {
   schemaVersion: 1;
@@ -136,3 +136,45 @@ export interface SaveStateV1 {
   unlockedPartIds: string[];
   lastDailySeed: string | null;
 }
+
+/**
+ * Per-week daily-special state. The week itself is anchored to the
+ * deterministic UTC rotation in `lib/dailyRotation.ts`; this slice only
+ * tracks the player's progress within the active week. The Phase 2 Daily
+ * Special screen (M18) reads these fields to render today's reward chip
+ * and to gate the Day-7 climax.
+ *
+ * Pure data, no derived fields: `weekIndex` and `dayInWeek` are recomputed
+ * from `lastVisitDate` whenever the player records a visit, so a stale
+ * stored pair never lies about which day "today" is.
+ */
+export interface DailyWeekState {
+  /** ISO week index, 0 = epoch week (May 4 2026 UTC). Tracks which themed-week is active. */
+  weekIndex: number;
+  /** 0..6, 0 = Monday. The day-in-week the player most recently visited the lab. */
+  dayInWeek: number;
+  /** ISO date string (YYYY-MM-DD) of the last lab visit. null if never. */
+  lastVisitDate: string | null;
+  /** Day-in-week values (0..6) for which the player has already claimed today's reward. */
+  claimedRewards: number[];
+}
+
+/**
+ * The Phase 2 save shape. Adds `dailyWeek` to V1's three fields. The
+ * blob still lives under `mil:save:v1` in localStorage; the version is
+ * carried inside the blob (`schemaVersion: 2`) so the migration can lift
+ * an existing v1 save in place without changing the storage key.
+ */
+export interface SaveStateV2 {
+  schemaVersion: 2;
+  catalogue: CatalogueEntry[];
+  unlockedPartIds: string[];
+  lastDailySeed: string | null;
+  dailyWeek: DailyWeekState;
+}
+
+/**
+ * The "current" save state alias. Bump this when the schema version
+ * changes again so consumers do not have to chase a literal v-number.
+ */
+export type SaveState = SaveStateV2;
