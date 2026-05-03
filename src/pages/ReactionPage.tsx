@@ -4,6 +4,7 @@ import type { GameStateApi } from '../hooks/useGameState';
 import type { RoundFlowApi } from '../hooks/useRoundFlow';
 import { getCustomerById } from '../data/customers';
 import { PARTS } from '../data/parts';
+import { pickReactionQuote } from '../data/reactionQuotes';
 import type { CatalogueEntry, Customer, Tier } from '../lib/types';
 import { Fingerprint } from '../components/ui/Fingerprint';
 import { PartChip } from '../components/ui/PartChip';
@@ -64,43 +65,6 @@ const TIER_CHIP_STYLES: Record<Tier, TierStyles> = {
   sortOf: { bg: 'bg-paper', text: 'text-ink', border: 'border-ink' },
   fail: { bg: 'bg-plum', text: 'text-paper', border: 'border-ink' },
 };
-
-/**
- * Reaction one-liners. Per customer, per tier, in `du`-form first-grader
- * vocabulary. A missing combo falls back to a generic per-tier line.
- */
-const REACTION_QUOTES: Record<string, Partial<Record<Tier, string>>> = {
-  pip: {
-    delight: 'das knuddelt fester als meine Oma!',
-    satisfied: 'ja, das passt schon ganz gut',
-    sortOf: 'hm, das ist okay-ish',
-    fail: 'oh nein, das ist nicht gemütlich',
-  },
-  bo: {
-    delight: 'mein Goldfisch hüpft vor Glück!',
-    satisfied: 'er guckt jetzt fröhlich',
-    sortOf: 'naja, er gähnt halt',
-    fail: 'er schläft wieder ein',
-  },
-  crunch: {
-    delight: 'das quietscht laut wie ein Donner!',
-    satisfied: 'ein gutes Quietschen',
-    sortOf: 'leiser als gehofft',
-    fail: 'das war kein Quietschen',
-  },
-};
-
-const FALLBACK_QUOTES: Record<Tier, string> = {
-  delight: 'super, das liebe ich!',
-  satisfied: 'das passt gut.',
-  sortOf: 'naja, geht so.',
-  fail: 'das ist nichts für mich.',
-};
-
-function pickReactionQuote(customer: Customer, tier: Tier): string {
-  const perCustomer = REACTION_QUOTES[customer.id];
-  return perCustomer?.[tier] ?? FALLBACK_QUOTES[tier];
-}
 
 /**
  * Synthesize a kid-friendly catalogue name from the customer + tier. The
@@ -174,7 +138,7 @@ export function ReactionPage({ game, round }: ReactionPageProps) {
   const tierTitle = TIER_TITLE_DE[invention.tier];
   const tierChipText = TIER_CHIP_DE[invention.tier];
   const tierChipStyle = TIER_CHIP_STYLES[invention.tier];
-  const reactionQuote = pickReactionQuote(customer, invention.tier);
+  const reactionQuote = pickReactionQuote(customer.id, invention.tier);
   const entryName = synthesizeName(customer, gameState.catalogue.length + 1);
   const partsScript = invention.parts
     .map((p) => p.labelDe.toLowerCase())

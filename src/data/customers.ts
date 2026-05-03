@@ -1,15 +1,14 @@
 import type { Customer } from '../lib/types';
 
 /**
- * Phase-1 placeholder customer roster: 3 of the eventual 6 regulars.
- *
- * The full 6-customer roster (adding Oma, Twig, Kit) lands in Phase 2.
- * Phase 1 keeps the smallest set that still exercises every wants pattern
- * the trait fingerprint needs to score:
+ * The 6 regular customers who anchor the core arrival rotation.
  *
  * - Pip       Cozy + Fun
  * - Bo        Fun + Zappy   (unlocks Fernrohr on first delight)
  * - Sir Knirps Boom + Zappy (unlocks Magnethandschuh on first delight)
+ * - Oma       Cozy + Zappy
+ * - Twig      Cozy, forbidden Boom (the "boom-forbidden" rule lives here)
+ * - Kit       Boom + Fun     (unlocks Auge on first delight)
  *
  * All `requestDe` lines use `du`-form, first-grader vocabulary.
  */
@@ -38,7 +37,38 @@ export const CUSTOMERS: Customer[] = [
     forbidden: [],
     visualKind: 'crunch',
   },
+  {
+    id: 'oma',
+    nameDe: 'Oma',
+    requestDe: 'mach mir was, das pfeift, wenn der Tee fertig ist',
+    wants: ['cozy', 'zappy'],
+    forbidden: [],
+    visualKind: 'oma',
+  },
+  {
+    id: 'twig',
+    nameDe: 'Twig',
+    requestDe: 'der Wind ist zu laut. mach ihn leise für mich',
+    wants: ['cozy'],
+    forbidden: ['boom'],
+    visualKind: 'twig',
+  },
+  {
+    id: 'kit',
+    nameDe: 'Kit',
+    requestDe: 'erschreck die Katze, bitte',
+    wants: ['boom', 'fun'],
+    forbidden: [],
+    visualKind: 'kit',
+  },
 ];
+
+/**
+ * Stable id list for the regular roster. Useful for callers (rotation,
+ * catalogue filters) that need to iterate just the regulars without
+ * pulling in the daily-special visitors.
+ */
+export const REGULAR_CUSTOMER_IDS: string[] = CUSTOMERS.map((c) => c.id);
 
 /**
  * Lookup helper. Returns undefined when the id is unknown so callers can
